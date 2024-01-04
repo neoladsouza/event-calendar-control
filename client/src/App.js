@@ -1,25 +1,43 @@
 import React from "react";
-import logo from './logo.svg';
 import './App.css';
 
 export default function FormApp() {
-// creating a state variable, data
-  const [data, setData] = React.useState(null);
+  function handleSubmit(e) {
+    e.preventDefault(); // prevent webpage reloading
 
-  React.useEffect(() => {
-    fetch('/api')
-    .then(res => res.json())
-    .then(data => setData(data.message));
-  }, []);
+    const form = e.target; 
+    const formData = new FormData(form);
+
+    fetch('/api', {method : form.method, body : formData});
+  }
 
   return (
-    <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        {!data ? "Loading..." : data}
-      </p>
-    </header>
-  </div>
+    <>
+      <form method="post" onSubmit={handleSubmit}>
+        <label>
+          Event Name: <input name="eventName"/>
+        </label>
+        <hr/>
+        <p>
+          Event Type:
+          <label>
+            <input type="radio" name="eventType" value="course"/> Course
+          </label>
+          <label>
+            <input type="radio" name="eventType" value="workshop"/> Workshop
+          </label>
+          <label>
+            <input type="radio" name="eventType" value="retreat"/> Retreat
+          </label>
+        </p>
+        <hr/>
+        <label>
+          Event Description: <textarea name="eventDesc"/>
+        </label>
+        <hr/>
+        <button type="reset">Reset form</button>
+        <button type="submit">Submit form</button>
+      </form>
+    </>
   );
 }
