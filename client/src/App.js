@@ -11,13 +11,14 @@ export default function FormApp() {
     const form = e.target; 
     const formData = new FormData(form);
 
-    // fetch('/api', {method : form.method, body : formData});
-    console.log(new URLSearchParams(formData).toString());
+    // fetch('/api', {method :  form.method, body : formData});
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
   }
 
   return (
     <>
-      <form method="post" onSubmit={handleSubmit}>
+      <form method="post" action={handleSubmit}>
         <label>
           Event Name: <input name="eventName" value={eventName} onChange={e => setEventName(e.target.value)}/>
         </label>
@@ -32,7 +33,7 @@ export default function FormApp() {
         </label>
         <br/>
         <label>
-          Event Description: <textarea name="eventDesc"/>
+          Event Description: <textarea name="eventDesc" rows={4} cols={40}/>
         </label>
         <br/>
         <button type="reset">Reset form</button>

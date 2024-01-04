@@ -12,6 +12,10 @@ app.get("/api", (req, res) => {
     res.json({message : "Hello from server!"})
 });
 
+app.post("/events", (req, res) => {
+    res.send("POST Request called");
+});
+
 // when server is started on the port -> app logs this message to the console
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
