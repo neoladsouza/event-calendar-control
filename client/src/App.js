@@ -15,15 +15,6 @@ export default function FormApp() {
 
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
-    /*
-    const form = e.target; 
-    const formData = new FormData(form);
-
-    fetch('http://localhost:3001/events', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({formData})
-    }); */
 
     // every time form is submitted -> create a new object with event name, type, and description properties
     const newEvent = { 
@@ -38,7 +29,25 @@ export default function FormApp() {
 
     // add that object to the array 
     setAllEvents([...allEvents, newEvent]);
+
+    // POST request to upload JSON data
+    postEventsJSON(allEvents);
   }
+
+  async function postEventsJSON(data) {
+    try {
+      fetch("/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      })
+      .then(response => {return response.json();})
+      .then(data => {console.log(data)});
+    } catch (error) {
+      console.log("Error : ", error)
+    }
+  }
+
   function handleNameChange(e) {
     setEventName(e.target.value);
   }
@@ -94,14 +103,13 @@ export default function FormApp() {
     );
   }
 
-  // method="post" onSubmit={handleSubmit}
   // handle deleting events, accessing events to edit
   // handle proper input validation in handleSubmit() (call another function for it within handleSubmit)
   // parse date and time strings to have repeated events and/or visible durations (prime react library?)
     // parsing dates: splice date string to get each part -> create Date object + compare start date with end date
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form method="POST" onSubmit={handleSubmit}>
         <ul>
           <li>
             <label>
