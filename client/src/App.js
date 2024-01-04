@@ -1,9 +1,10 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import './App.css';
 
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
   const [eventType, setEventType] = useState('');
+  const [postData, setPostData] = React.useState(null);
 
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
@@ -11,9 +12,11 @@ export default function FormApp() {
     const form = e.target; 
     const formData = new FormData(form);
 
-    // fetch('/api', {method :  form.method, body : formData});
-    const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
+    fetch('http://localhost:3001/events', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({formData})
+    });
   }
 
   return (
