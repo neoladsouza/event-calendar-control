@@ -1,19 +1,62 @@
 import React, {useState} from "react";
 import './App.css';
-
-let events = [
-  {name: 'cmsc131', type: 'course', description: 'stinky A+'},
-  {name: 'math141', type: 'course', description: 'stinky B+'}
-];
+import { v4 as uuidv4 } from 'uuid';
 
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
   const [eventType, setEventType] = useState('');
   const [eventDesc, setEventDesc] = useState('');
+  const [allEvents, setAllEvents] = useState([]);
 
+  function handleSubmit(e) {
+    e.preventDefault(); // prevent webpage reloading
+    /*
+    const form = e.target; 
+    const formData = new FormData(form);
+
+    fetch('http://localhost:3001/events', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({formData})
+    }); */
+
+    // every time form is submitted -> create a new object with event name, type, and description properties
+    const newEvent = { 
+      name: eventName,
+      type: eventType,
+      description: eventDesc,
+      id: eventName + uuidv4() // generate unique id for each event
+    }
+
+    // add that object to the array 
+    setAllEvents([...allEvents, newEvent]);
+  }
+
+  function ViewEvents(props) {
+    const events = props.events;
+    return(
+      <div>
+        <h3>Your Events</h3>
+        { 
+          events.length === 0 ? 
+            (<p>No events created</p>) :
+            (events.map(event => (
+              <ul key={event.id}>
+                <li>Your Event Name: {event.name}</li>
+                <li>Your Event Type: {event.type}</li>
+                <li>Your Event Description: {event.description}</li>
+              </ul>
+              ))
+            )
+        }
+      </div>
+    )
+  }
+
+  // method="post" onSubmit={handleSubmit}
   return (
     <>
-      <form action={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <ul>
           <li>
             <label>
@@ -44,47 +87,8 @@ export default function FormApp() {
       {eventDesc !== '' && <p>Entered Event Description: {eventDesc}</p>}
       <hr/>
       <button type="button">View Events</button>
-      <ViewEvents events={events}/>
+      <hr/>
+      <ViewEvents events={allEvents}/>
     </>
   );
-
-  function handleSubmit(e) {
-    e.preventDefault(); // prevent webpage reloading
-    /*
-    const form = e.target; 
-    const formData = new FormData(form);
-
-    fetch('http://localhost:3001/events', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({formData})
-    }); */
-
-    // every time form is submitted -> create a new object with event name, type, and description properties
-    let eventObject = {
-      name: eventName,
-      type: eventType,
-      description: eventDesc
-    }
-    // add that object to an array 
-    events.push(eventObject);
-  }
-
-  function ViewEvents(props) {
-    const events = props.events;
-    return(
-      <div>
-        {
-          events.map(event => (
-            <div key={event.id}>
-              <p>Your Event Name: {event.name}</p>
-              <p>Your Event Type: {event.type}</p>
-              <p>Your Event Description: {event.description}</p>
-            </div>
-            )
-          )
-        }
-      </div>
-    )
-  }
 }
