@@ -4,25 +4,31 @@ import './App.css';
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
   const [eventType, setEventType] = useState('');
+  const [eventDesc, setEventDesc] = useState('');
   const events = [];
 
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
-
+    /*
     const form = e.target; 
     const formData = new FormData(form);
 
-    /* fetch('http://localhost:3001/events', {
+    fetch('http://localhost:3001/events', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({formData})
     }); */
 
-    
+    // every time form is submitted -> create a new object with event name, type, and description properties
+    const eventObject = {
+      "name": eventName,
+      "type": eventType,
+      "description": eventDesc
+    }
+    // add that object to an array 
+    events.push(eventObject);
   }
 
-  // every time form is submitted -> create a new object with event name, type, and description properties
-  // add that object to an array 
   // every time "view events" is clicked -> map each object in the array to a <Event/> component
   return (
     <>
@@ -45,15 +51,17 @@ export default function FormApp() {
           </li>
           <li>
             <label>
-              Event Description: <textarea name="eventDesc" rows={4} cols={40}/>
+              Event Description: <textarea name="eventDesc" rows={4} cols={40} value={eventDesc} onChange={e => setEventDesc(e.target.value)}/>
             </label>
           </li>
         </ul>
         <button type="submit">Submit form</button>
       </form>
       <hr/>
+      <button type="button">View Events</button>
       {eventName !== '' && <p>Entered Event Name: {eventName}</p>}
       {eventType !== '' && <p>Entered Event Type: {eventType}</p>}
+      {eventDesc !== '' && <p>Entered Event Description: {eventDesc}</p>}
     </>
   );
 }
