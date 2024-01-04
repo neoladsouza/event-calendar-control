@@ -42,16 +42,13 @@ code {
   font-size: 1.2em;
 }
 
-label { display: block; }
-input { margin: 5px; }
-
 form {
   /* Center the form on the page */
   margin: 0 auto;
   width: 400px;
   /* Form outline */
   padding: 1em;
-  border: 1px solid #ccc;
+  border: 1px solid #120930;
   border-radius: 1em;
 }
 
@@ -68,6 +65,7 @@ form li + li {
 label {
   /* Uniform size & alignment */
   display: inline-block;
+  margin-bottom: 0.5em;
 }
 
 input,
@@ -81,7 +79,7 @@ textarea {
   box-sizing: border-box;
 
   /* Match form field borders */
-  border: 1px solid #999;
+  border: 1px solid #120930;
 }
 
 input:focus,
@@ -96,6 +94,10 @@ textarea {
 
   /* Provide space to type some text */
   height: 5em;
+}
+
+select {
+  margin-left: 0.25em;
 }
 
 button {

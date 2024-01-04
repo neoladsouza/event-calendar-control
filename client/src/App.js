@@ -63,7 +63,6 @@ export default function FormApp() {
       </div>
     )
   }
-
   function Options(props) {
     const categories = props.categories;
     return(
@@ -105,8 +104,6 @@ export default function FormApp() {
         </ul>
         <button type="submit">Submit form</button>
       </form>
-      <hr/>
-      <button type="button">View Events</button>
       <hr/>
       <Events events={allEvents}/>
     </>
