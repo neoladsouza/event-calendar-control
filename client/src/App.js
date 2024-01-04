@@ -4,7 +4,7 @@ import './App.css';
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
   const [eventType, setEventType] = useState('');
-  // const [postData, setPostData] = React.useState(null);
+  const events = [];
 
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
@@ -12,37 +12,46 @@ export default function FormApp() {
     const form = e.target; 
     const formData = new FormData(form);
 
-    fetch('http://localhost:3001/events', {
+    /* fetch('http://localhost:3001/events', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({formData})
-    });
+    }); */
+
+    
   }
 
+  // every time form is submitted -> create a new object with event name, type, and description properties
+  // add that object to an array 
+  // every time "view events" is clicked -> map each object in the array to a <Event/> component
   return (
     <>
       <form method="post" action={handleSubmit}>
-        <label>
-          Event Name: <input name="eventName" value={eventName} onChange={e => setEventName(e.target.value)}/>
-        </label>
-        <br/>
-        <label>
-          Event Type:
-          <select name="selectedEventType" value={eventType} onChange={e => setEventType(e.target.value)}>
-            <option value="course">Course</option>
-            <option value="workshop">Workshop</option>
-            <option value="retreat">Retreat</option>
-          </select>
-        </label>
-        <br/>
-        <label>
-          Event Description: <textarea name="eventDesc" rows={4} cols={40}/>
-        </label>
-        <br/>
-        <button type="reset">Reset form</button>
+        <ul>
+          <li>
+            <label>
+              Event Name: <input type="text" name="eventName" value={eventName} onChange={e => setEventName(e.target.value)}/>
+            </label>
+          </li>
+          <li>
+            <label>
+              Event Type:
+              <select name="selectedEventType" value={eventType} onChange={e => setEventType(e.target.value)}>
+                <option value="course">Course</option>
+                <option value="workshop">Workshop</option>
+                <option value="retreat">Retreat</option>
+              </select>
+            </label>
+          </li>
+          <li>
+            <label>
+              Event Description: <textarea name="eventDesc" rows={4} cols={40}/>
+            </label>
+          </li>
+        </ul>
         <button type="submit">Submit form</button>
-        <hr/>
       </form>
+      <hr/>
       {eventName !== '' && <p>Entered Event Name: {eventName}</p>}
       {eventType !== '' && <p>Entered Event Type: {eventType}</p>}
     </>
