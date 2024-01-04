@@ -2,8 +2,8 @@ import React from "react";
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  // creating a state variable, data
+export default function FormApp() {
+// creating a state variable, data
   const [data, setData] = React.useState(null);
 
   React.useEffect(() => {
@@ -14,14 +14,12 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          {!data ? "Loading..." : data}
-        </p>
-      </header>
-    </div>
+    <header className="App-header">
+      <img src={logo} className="App-logo" alt="logo" />
+      <p>
+        {!data ? "Loading..." : data}
+      </p>
+    </header>
+  </div>
   );
 }
-
-export default App;
