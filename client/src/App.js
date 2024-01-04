@@ -4,7 +4,7 @@ import './App.css';
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
   const [eventType, setEventType] = useState('');
-  const [postData, setPostData] = React.useState(null);
+  // const [postData, setPostData] = React.useState(null);
 
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
