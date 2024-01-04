@@ -2,9 +2,11 @@ import React, {useState} from "react";
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
 
+const possibleEventTypes = ['Service', 'Appointment', 'Course', 'Workshop', 'Retreat', 'Program'];
+
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
-  const [eventType, setEventType] = useState('');
+  const [eventType, setEventType] = useState(possibleEventTypes[0]);
   const [eventDesc, setEventDesc] = useState('');
   const [allEvents, setAllEvents] = useState([]);
 
@@ -31,8 +33,17 @@ export default function FormApp() {
     // add that object to the array 
     setAllEvents([...allEvents, newEvent]);
   }
+  function handleNameChange(e) {
+    setEventName(e.target.value);
+  }
+  function handleTypeChange(e) {
+    setEventType(e.target.value);
+  }
+  function handleDescChange(e) {
+    setEventDesc(e.target.value);
+  }
 
-  function ViewEvents(props) {
+  function Events(props) {
     const events = props.events;
     return(
       <div>
@@ -53,42 +64,51 @@ export default function FormApp() {
     )
   }
 
+  function Options(props) {
+    const categories = props.categories;
+    return(
+      <>
+        {
+          categories.map((value, index) => (
+            <option key={index} value={value.toLowerCase()}>{value}</option>
+          ))
+        }
+      </>
+    );
+  }
+
   // method="post" onSubmit={handleSubmit}
+  // idea ->  big switch statement for handling all input changes?
+  // handle input validation in "handleSubmit"
   return (
     <>
       <form onSubmit={handleSubmit}>
         <ul>
           <li>
             <label>
-              Event Name: <input type="text" name="eventName" value={eventName} onChange={e => setEventName(e.target.value)}/>
+              Event Name: <input type="text" name="eventName" value={eventName} onChange={handleNameChange}/>
             </label>
           </li>
           <li>
             <label>
               Event Type:
-              <select name="selectedEventType" value={eventType} onChange={e => setEventType(e.target.value)}>
-                <option value="course">Course</option>
-                <option value="workshop">Workshop</option>
-                <option value="retreat">Retreat</option>
+              <select name="selectedEventType" value={eventType} onChange={handleTypeChange}>
+                <Options categories={possibleEventTypes}/>
               </select>
             </label>
           </li>
           <li>
             <label>
-              Event Description: <textarea name="eventDesc" rows={4} cols={40} value={eventDesc} onChange={e => setEventDesc(e.target.value)}/>
+              Event Description: <textarea name="eventDesc" value={eventDesc} onChange={handleDescChange}/>
             </label>
           </li>
         </ul>
         <button type="submit">Submit form</button>
       </form>
       <hr/>
-      {eventName !== '' && <p>Entered Event Name: {eventName}</p>}
-      {eventType !== '' && <p>Entered Event Type: {eventType}</p>}
-      {eventDesc !== '' && <p>Entered Event Description: {eventDesc}</p>}
-      <hr/>
       <button type="button">View Events</button>
       <hr/>
-      <ViewEvents events={allEvents}/>
+      <Events events={allEvents}/>
     </>
   );
 }
