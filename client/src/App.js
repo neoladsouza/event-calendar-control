@@ -221,14 +221,14 @@ function Week({weekPosition, days}) {
     <tr key={weekPosition}>
       {
         Array.from(days).map((value, index) => (
-          <Day key={weekPosition + value + uuidv4()} weekNumber={index} dayNumber={value} />
+          <Day key={weekPosition + value + uuidv4()} dayNumber={value} />
         ))
       }
     </tr>
   );
 }
 
-function Day({weekNumber, dayNumber}) {
+function Day({dayNumber}) {
   return (
     <td className="day">{dayNumber}</td>
   );
