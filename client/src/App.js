@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,12 +27,18 @@ export default function FormApp() {
       id: eventName + uuidv4() // generate unique id for each event
     }
 
-    // add that object to the array 
+    // state updates are Asynchronous - need to place reliant code in useEffect
     setAllEvents([...allEvents, newEvent]);
 
     // POST request to upload JSON data
-    postEventsJSON(allEvents);
+    
   }
+
+  useEffect(() => {
+    // code that relies on the updated state
+    console.log(allEvents);
+    postEventsJSON(allEvents);
+  }, [allEvents]); //  the code will run whenever any of these dependencies change
 
   async function postEventsJSON(data) {
     try {
@@ -67,8 +73,9 @@ export default function FormApp() {
     setEventDesc(e.target.value);
   }
 
-  function Events(props) {
-    const events = props.events;
+  function Events() {
+    // const events = props.arrayPassed;
+    const events = Array.from(allEvents);
     return(
       <div>
         <h3>Your Events</h3>
@@ -148,7 +155,8 @@ export default function FormApp() {
         <button type="submit">Submit form</button>
       </form>
       <hr/>
-      <Events events={allEvents}/>
+      
+      <Events />
     </>
   );
 }
