@@ -1,6 +1,8 @@
 const express = require("express");
+const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3001;
 const app = express();
+app.use(bodyParser.json());
 
 let counter = 0;
 
@@ -15,7 +17,14 @@ app.get("/api", (request, response) => {
     you will observe double renders for diagnostic purposes.
 */
 app.post("/events", (request, response) => {
-    response.json("POST Request called, #" + counter);
+    const receivedData = request.body;
+    
+    console.log("Received data: ", receivedData);
+
+    response.json({
+        message: 'Data received successfully!',
+        request_count: counter
+    });
     counter++;
     // response.json(JSON.stringify(request));
     // console.log(response);

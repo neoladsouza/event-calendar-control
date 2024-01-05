@@ -29,30 +29,46 @@ export default function FormApp() {
 
     // state updates are Asynchronous - need to place reliant code in useEffect
     setAllEvents([...allEvents, newEvent]);
-
-    // POST request to upload JSON data
-    
   }
 
   useEffect(() => {
     // code that relies on the updated state
     console.log(allEvents);
-    postEventsJSON(allEvents);
-  }, [allEvents]); //  the code will run whenever any of these dependencies change
 
-  async function postEventsJSON(data) {
-    try {
-      fetch("/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json"},
-        body: JSON.stringify(data)
-      })
-      .then(response => {return response.json();})
-      .then(data => {console.log(data)});
-    } catch (error) {
-      console.log("Error : ", error)
+    // function definition
+    async function postEventsJSON() {
+      /* try {
+        fetch("/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json"},
+          body: JSON.stringify(data)
+        })
+        .then(response => {return response.json();})
+        .then(data => {console.log(data)}); // logs response.json to the console
+      } catch (error) {
+        console.log("Error : ", error)
+      } */
+      try {
+        const response = await fetch("/events", {
+          method: "POST",
+          headers: {"Content-Type": "application/json",},
+          body: JSON.stringify(allEvents),
+        })
+  
+        if (response.ok) {
+          console.log("data sent successfully!");
+          const responseData = await response.json();
+          console.log('Server response:', responseData);
+        } else {
+          console.error("failed to send data :(");
+        }
+      } catch (error) {
+        console.error("error sending data: ", error);
+      }
     }
-  }
+
+    postEventsJSON();
+  }, [allEvents]); //  the code will run whenever any of these dependencies change
 
   function handleNameChange(e) {
     setEventName(e.target.value);
