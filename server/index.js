@@ -1,8 +1,10 @@
 const express = require("express");
 const bodyParser = require('body-parser');
+const fileSystem = require('fs');
 const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(bodyParser.json());
+writeToJSONFile("C:/Users/harol/OneDrive/Documents/GitHub/form-app/server/data.json", JSON.stringify([], null, "\t"));
 
 let counter = 0;
 
@@ -18,20 +20,27 @@ app.get("/api", (request, response) => {
 */
 app.post("/events", (request, response) => {
     const receivedData = request.body;
-    
     console.log("Received data: ", receivedData);
+    writeToJSONFile("C:/Users/harol/OneDrive/Documents/GitHub/form-app/server/data.json", JSON.stringify(receivedData, null, "\t"));
 
     response.json({
         message: 'Data received successfully!',
         request_count: counter
     });
     counter++;
-    // response.json(JSON.stringify(request));
-    // console.log(response);
-    // response.send(request.body);
 });
 
-// when server is started on the port -> app logs this message to the console
+// writing json string to file
+function writeToJSONFile(path, jsonString) {
+    fileSystem.writeFile(path, jsonString, (error) => {
+        if (error) {
+            console.log("error writing file :(", error);
+        } else {
+            console.log("file written successfully!")
+        }
+    })
+}
+
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });

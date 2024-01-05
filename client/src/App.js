@@ -171,7 +171,6 @@ export default function FormApp() {
         <button type="submit">Submit form</button>
       </form>
       <hr/>
-      
       <Events />
     </>
   );
