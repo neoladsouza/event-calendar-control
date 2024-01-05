@@ -4,9 +4,10 @@ const fileSystem = require('fs');
 const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(bodyParser.json());
-writeToJSONFile("C:/Users/harol/OneDrive/Documents/GitHub/form-app/server/data.json", JSON.stringify([], null, "\t"));
 
 let counter = 0;
+const eventDataJSONFilePath = "C:/Users/harol/OneDrive/Documents/GitHub/form-app/server/data.json";
+let isDataPosted = false;
 
 // creating an API endpoint
 app.get("/api", (request, response) => {
@@ -18,16 +19,27 @@ app.get("/api", (request, response) => {
     If you're running your application in development mode with Strict Mode enabled, 
     you will observe double renders for diagnostic purposes.
 */
+app.get("/events", (request, response) => {
+    response.json() = readJSONFile(eventDataJSONFilePath);
+});
+
+
 app.post("/events", (request, response) => {
     const receivedData = request.body;
     console.log("Received data: ", receivedData);
-    writeToJSONFile("C:/Users/harol/OneDrive/Documents/GitHub/form-app/server/data.json", JSON.stringify(receivedData, null, "\t"));
+    writeToJSONFile(eventDataJSONFilePath, JSON.stringify(receivedData, null, "\t"));
 
     response.json({
         message: 'Data received successfully!',
         request_count: counter
     });
     counter++;
+    isDataPosted = true;
+});
+
+app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+    writeToJSONFile(eventDataJSONFilePath, JSON.stringify([], null, "\t"));
 });
 
 // writing json string to file
@@ -36,11 +48,20 @@ function writeToJSONFile(path, jsonString) {
         if (error) {
             console.log("error writing file :(", error);
         } else {
-            console.log("file written successfully!")
+            console.log("file written successfully!");
         }
     })
 }
 
-app.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
-});
+// reading json file and parsing to JS object
+function readJSONFile(path) {
+    fileSystem.readFile(path, "utf8", (error, data) => {
+        if (error) {
+            console.log("error reading file :(", error);
+        } else {
+            const jsonData = JSON.parse(data);
+            console.log("Parsed JSON data: ", jsonData);
+            return jsonData;
+        }
+    })
+}
