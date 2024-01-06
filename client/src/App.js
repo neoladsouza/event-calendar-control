@@ -19,9 +19,13 @@ export default function FormApp() {
     e.preventDefault(); // prevent webpage reloading
 
     // every time form is submitted -> create a new object with event name, type, and description properties
+    // 0123456789
+    // yyyy-mm-dd
     const newEvent = { 
       name: eventName,
       date: eventDate,
+      month: eventDate.substring(5, 7),
+      day: eventDate.substring(8, 9).localeCompare("0") === 0 ? eventDate.substring(9, 10) : eventDate.substring(8, eventDate.length),
       startTime: eventStartTime,
       endTime: eventEndTime,
       type: eventType,
@@ -159,7 +163,7 @@ export default function FormApp() {
           </ul>
           <button type="submit">Submit form</button>
         </form>
-        <Calendar/>
+        <Calendar list={allEvents}/>
       </main>
       <hr/>
       <Events dataList={allEvents}/>
@@ -181,16 +185,64 @@ function Options({categories}) {
 
 // making the calendar -> try a 1-month calendar, say January 2024 - starts jan 1 on monday, jan 31 on wednesday - need to fill in other days
 // split event's date into year, month, day -> if day and month match the calendar, put the event in that day
-const jan2024days = [
-  [31,1,2,3,4,5,6], [7,8,9,10,11,12,13], [14,15,16,17,18,19,20], [21,22,23,24,25,26,27], [28,29,30,31,1,2,3]
-];
+// each day -> {year, month, day, events}
 
-function Calendar() {
-  // needs a header -> month name
-  // table header (th) -> each day of the week
+const listOfDays = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, null, null, null];
+
+function Calendar({list}) {
+  const [calendarDays, setCalendarDays] = useState([]);
+
+  function addEventToDay() {
+    // if the same event already exists in the day, don't add it 
+    // once the correct day is found, add the event and stop
+    // ideally -> loop through all the days and all the events, 
+    // what's actually happening -> the correct day is being logged to the console 
+
+    console.log("puskat");
+    console.log(calendarDays);
+    if (list.length === 0) {
+      console.log("nothing to add");
+    }
+  
+    calendarDays.forEach(dayObject => {
+      list.forEach(eventObject => {
+        if (dayObject.day.localeCompare(eventObject.day) === 0) {
+          dayObject.events.push(eventObject);
+          console.log(dayObject);
+        }
+      });
+    });
+  }
+
+  if (calendarDays.length === 0) {
+    for (let index = 0; index < listOfDays.length; index++) {
+      setCalendarDays(prevCalendarDays => [...prevCalendarDays, createDayObject(listOfDays[index])]);
+    }
+  }
+
+  const createDayObject = (number) => {
+    const year = "2024";
+    const month = "01";
+    const day = (number === null) ? ("00") : number.toString();
+
+    return {
+      id: uuidv4(),
+      year: year,
+      month: month,
+      day: day,
+      events: []
+    };
+  };
+
+  const weeks = Array.from({length: 5}, (_, index) => {
+    const startDay = index * 7;
+    return listOfDays.slice(startDay, startDay + 7);
+  });
+
   return (
     <div className="calendar-container">
       <h3>Your Calendar</h3>
+      <button type="button" onClick={addEventToDay}>Add Event</button>
       <table>
         <caption><h4>January 2024</h4></caption>
         <thead>
@@ -206,8 +258,15 @@ function Calendar() {
         </thead>
         <tbody>
           {
-            jan2024days.map((value, index) => (
-              <Week key={index + uuidv4()} weekPosition={index + 1} days={value}/>
+            // every 7 days, make a new row
+            weeks.map((week, weekIndex) => (
+              <tr key={weekIndex + uuidv4()}>
+                {
+                  week.map((dayNumber) => (
+                    <Day key={dayNumber + uuidv4()} numberOfDay={dayNumber}/>
+                  ))
+                }
+              </tr>
             ))
           }
         </tbody>
@@ -216,33 +275,29 @@ function Calendar() {
   );
 }
 
-function Week({weekPosition, days}) {
+function Day({numberOfDay}) {
   return (
-    <tr key={weekPosition}>
-      {
-        Array.from(days).map((value, index) => (
-          <Day key={weekPosition + value + uuidv4()} dayNumber={value} />
-        ))
+    <td className="day">
+      {numberOfDay} 
+      {/*
+        (newDayObject.events.length === 0) ? 
+          (<p>No events</p>) :
+          (<p>{newDayObject.events}</p>) */
       }
-    </tr>
-  );
-}
-
-function Day({dayNumber}) {
-  return (
-    <td className="day">{dayNumber}</td>
+      
+    </td>
   );
 }
 
 function Events({dataList}) {
-  const eventsList = Array.from(dataList);
+  const list = Array.from(dataList);
   return(
     <div className="events-container">
       <h3>Your Events</h3>
       { 
-        eventsList.length === 0 ? 
+        list.length === 0 ? 
           (<p>No events created</p>) :
-          (eventsList.map(event => (
+          (list.map(event => (
             // need to destructure props by spreading the properties of each object as separate props 
             <Event key={event.id} id={event.id} name={event.name} date={event.date} startTime={event.startTime} endTime={event.endTime} type={event.type} description={event.description} {...event}/>
             ))
