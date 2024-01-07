@@ -31,9 +31,7 @@ class CustomDate extends Date {
   }
 }
 
-
 const possibleEventTypes = ['None', 'Service', 'Appointment', 'Course', 'Workshop', 'Retreat', 'Program'];
-const sampleEvents = [{date: new CustomDate("2024-01-05"), title: "make puski"}, {date: new CustomDate("2024-01-08"), title: "watch TODO"}, {date: new CustomDate("2024-01-24"), title: "read book"}];
 // const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -51,13 +49,8 @@ export default function FormApp() {
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
 
-    // every time form is submitted -> create a new object with event name, type, and description properties
-    // 0123456789
-    // yyyy-mm-dd
-    // every event has a ... startDate, endDate, startTime, endTime
     const newEvent = { 
       name: eventName,
-      // date: eventStart.toLocaleDateString(), // 1/7/2024, 3:01:00 PM
       start: eventStart, // CustomDate object
       end: eventEnd, // CustomDate object
       startDate: eventStart.toLocaleDateString().split(',')[0],
@@ -206,7 +199,7 @@ export default function FormApp() {
             <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded text-center">Submit form</button>
           </ul>
         </form>
-        <NewCalendar events={sampleEvents}/>
+        <NewCalendar events={allEvents}/>
       </main>
       <hr className="w-full h-1 mt-5 bg-blue border-0 rounded"/>
       <Events dataList={allEvents}/>
@@ -246,7 +239,7 @@ function NewCalendar({events}) {
   const eventsByDate = useMemo(() => {
     return (
       events.reduce((acc, event) => {
-        const dateKey = format(event.date, "yyyy-MM-dd");
+        const dateKey = format(event.startDate, "yyyy-MM-dd");
         if (!acc[dateKey]) {
           acc[dateKey] = [];
         }
@@ -274,15 +267,14 @@ function NewCalendar({events}) {
         }
 
         {
-        // array will not change across renders - so the key can be the index
           daysInMonth.map((day, index) => {
             const dateKey = format(day, "yyyy-MM-dd"); // making a key to access the event(s) by
             const todaysEvents = eventsByDate[dateKey] || [];
             return (
-              <div key={index} className={clsx("border rounded-md p-2 text-center", {"bg-gray-200 text-gray-900" : isToday(day)})}>
+              <div key={index + day + dateKey} className={clsx("border rounded-md p-2 text-center", {"bg-gray-200 text-gray-900" : isToday(day)})}>
                 <p className="mb-2">{format(day, "d")}</p>
                 {todaysEvents.map((event) => {
-                  return (<div key={event.title} className="bg-green-200 rounded-md text-gray-900 p-0.5">{event.title}</div>);
+                  return (<div key={event.name + dateKey + uuidv4()} className="bg-green-200 rounded-md text-gray-900 p-0.5">{event.name}<br/>{event.type}</div>);
                 })}
               </div>
             );
@@ -310,7 +302,6 @@ function Events({dataList}) {
           list.length === 0 ? 
             (<p>No events created</p>) :
             (list.map(event => (
-              // need to destructure props by spreading the properties of each object as separate props 
               <Event key={event.id} eventObject={event}/>
               ))
             )
