@@ -2,10 +2,11 @@ import React, {useState, useEffect, useMemo} from 'react';
 import './App.css';
 import './assets/main.css';
 import { v4 as uuidv4 } from 'uuid';
-import {addDays, subDays, eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth} from 'date-fns';
+import {addDays, subDays, eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isSameDay} from 'date-fns';
 import clsx from 'clsx';
 
 const possibleEventTypes = ['None', 'Service', 'Appointment', 'Course', 'Workshop', 'Retreat', 'Program'];
+const sampleEvents = [{date: new Date("2024-01-05"), title: "make puski"}, {date: new Date("2024-01-08"), title: "watch TODO"}, {date: new Date("2024-01-24"), title: "read book"}];
 
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
@@ -166,11 +167,7 @@ export default function FormApp() {
           </ul>
           <button type="submit" className="bg-transparent hover:bg-blue text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue hover:border-transparent rounded">Submit form</button>
         </form>
-        <NewCalendar events={[
-          {date: subDays(new Date(), 5), title: "make puski"},
-          {date: subDays(new Date(), 8), title: "watch TODO"},
-          {date: subDays(new Date(), 24), title: "read book"}
-        ]}/>
+        <NewCalendar events={sampleEvents}/>
       </main>
       <hr className="my-5 text-blue"/>
       <Events dataList={allEvents}/>
@@ -209,6 +206,21 @@ function NewCalendar({events}) {
   const startingDayIndex = getDay(firstDayOfMonth); // returns index of the given day within its WEEK (so this would be 2, out of 0-6)
   const endingDayIndex = getDay(lastDayOfMonth);
 
+  // useMemo -> don't want to perform all this code unless absolutely necessary
+  // take all of the events and create an object where each event can be accessed by a key, which is their date
+  const eventsByDate = useMemo(() => {
+    return (
+      events.reduce((acc, event) => {
+        const dateKey = format(event.date, "yyyy-MM-dd");
+        if (!acc[dateKey]) {
+          acc[dateKey] = [];
+        }
+        acc[dateKey].push(event);
+        return acc;
+      }, {})
+    )
+  }, [events]);
+
   return (
     <div className="calendar-container container mx-auto p-4">
       <div className="mb-4">
@@ -217,23 +229,28 @@ function NewCalendar({events}) {
       <div className="grid grid-cols-7 grid-rows-5 gap-2">
         {
           WEEKDAYS.map((day) => {
-            return <div key={day} className="font-bold text-center">{day}</div>
+            return (<div key={day} className="font-bold text-center">{day}</div>);
           })
         }
 
         {
           // render empty days to offset the dates
           Array.from({length: startingDayIndex}).map((_, index) => {
-            return <div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>;
+            return (<div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>);
           })
         }
 
         {
         // array will not change across renders - so the key can be the index
           daysInMonth.map((day, index) => {
+            const dateKey = format(day, "yyyy-MM-dd"); // making a key to access the event(s) by
+            const todaysEvents = eventsByDate[dateKey] || [];
             return (
-              <div key={index} className={clsx("border rounded-md p-2 text-center", {"bg-blue text-white" : isToday(day)})}>
+              <div key={index} className={clsx("border rounded-md p-2 text-center", {"bg-gray-200 text-gray-900" : isToday(day)})}>
                 {format(day, "d")}
+                {todaysEvents.map((event) => {
+                  return (<div key={event.title} className="bg-green-200 rounded-md text-gray-900">{event.title}</div>);
+                })}
               </div>
             );
           })
@@ -242,7 +259,7 @@ function NewCalendar({events}) {
         {
           // render empty days to fill in the end of the calendar
           Array.from({length: (6 - endingDayIndex)}).map((_, index) => {
-            return <div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>;
+            return (<div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>);
           })
         }
       </div>

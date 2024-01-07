@@ -137,6 +137,9 @@ module.exports = {
       blue: "#120930",
       black: colors.black,
       white: colors.white,
+      orange: colors.orange,
+      gray: colors.gray,
+      green: colors.green,
     },
     columns: {
       auto: 'auto',
