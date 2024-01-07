@@ -1,18 +1,47 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import './App.css';
-import './assets/main.css';
 import { v4 as uuidv4 } from 'uuid';
-import {addDays, subDays, eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isSameDay} from 'date-fns';
+import {eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth} from 'date-fns';
 import clsx from 'clsx';
 
+// CURRENT GOAL -> reformat all events to use Date objects 
+// LET EVENTS ONLY BE ONE DAY
+class CustomDate extends Date {
+  toISOStringWithOffset() {
+    const offset = 5; // EST is 5 hours behind toISOString() 
+
+    // Adjust the time by subtracting 5 hours
+    const adjustedDate = new Date(this);
+    adjustedDate.setHours(adjustedDate.getHours() - offset);
+    
+    // Use the standard toISOString method on the adjusted date
+    return adjustedDate.toISOString().slice(0, 16);
+  }
+
+  getTimeToString() {
+    function addZero(i) {
+      if (i < 10) {i = "0" + i}
+      return i;
+    }
+
+    const date = new Date(this);
+    const hours = addZero(date.getHours());
+    const minutes = addZero(date.getMinutes());
+    return hours + ":" + minutes;
+  }
+}
+
+
 const possibleEventTypes = ['None', 'Service', 'Appointment', 'Course', 'Workshop', 'Retreat', 'Program'];
-const sampleEvents = [{date: new Date("2024-01-05"), title: "make puski"}, {date: new Date("2024-01-08"), title: "watch TODO"}, {date: new Date("2024-01-24"), title: "read book"}];
+const sampleEvents = [{date: new CustomDate("2024-01-05"), title: "make puski"}, {date: new CustomDate("2024-01-08"), title: "watch TODO"}, {date: new CustomDate("2024-01-24"), title: "read book"}];
+// const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [eventStartTime, setStartTime] = useState('');
-  const [eventEndTime, setEndTime] = useState('');
+  // const [eventDate, setEventDate] = useState(new Date()); 
+  const [eventStart, setStart] = useState(new CustomDate());
+  const [eventEnd, setEnd] = useState(new CustomDate());
   const [eventType, setEventType] = useState(possibleEventTypes[0]);
   const [eventDesc, setEventDesc] = useState('');
   const [allEvents, setAllEvents] = useState([]);
@@ -25,13 +54,16 @@ export default function FormApp() {
     // every time form is submitted -> create a new object with event name, type, and description properties
     // 0123456789
     // yyyy-mm-dd
+    // every event has a ... startDate, endDate, startTime, endTime
     const newEvent = { 
       name: eventName,
-      date: eventDate,
-      month: eventDate.substring(5, 7),
-      day: eventDate.substring(8, 9).localeCompare("0") === 0 ? eventDate.substring(9, 10) : eventDate.substring(8, eventDate.length),
-      startTime: eventStartTime,
-      endTime: eventEndTime,
+      // date: eventStart.toLocaleDateString(), // 1/7/2024, 3:01:00 PM
+      start: eventStart, // CustomDate object
+      end: eventEnd, // CustomDate object
+      startDate: eventStart.toLocaleDateString().split(',')[0],
+      endDate: eventEnd.toLocaleDateString().split(',')[0],
+      startTime: eventStart.getTimeToString(),
+      endTime: eventEnd.getTimeToString(),
       type: eventType,
       description: eventDesc,
       id: eventName + uuidv4() // generate unique id for each event
@@ -104,14 +136,28 @@ export default function FormApp() {
   function handleNameChange(e) {
     setEventName(e.target.value);
   }
-  function handleDateChange(e) {
-    setEventDate(e.target.value);
+  function handleStartChange(e) {
+    let startString = e.target.value; // format is 2017-06-01T08:30
+    // let startDate = startString.split('T')[0]; // 2017-06-01 (ISO 8601 format)
+    // let startTime = startString.split('T')[1]; // 08:30
+    let date = new CustomDate(startString.slice(0, 16));
+    setStart(date);
+    /*
+    // regular expression - to check format of inputted date string
+    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/; 
+    if (regex.test(startString)) {
+      let date = new Date(startString);
+      setStart(date);
+      // console.log(date, date.toLocaleString());
+      // console.log(eventStart.toISOString()); // 5 hours ahead
+    } else {
+      console.log("invalid date entered");
+    }*/
   }
-  function handleStartTimeChange(e) {
-    setStartTime(e.target.value);
-  }
-  function handleEndTimeChange(e) {
-    setEndTime(e.target.value);
+  function handleEndChange(e) {
+    let endString = e.target.value;
+    let date = new CustomDate(endString.slice(0, 16));
+    setEnd(date);
   }
   function handleTypeChange(e) {
     setEventType(e.target.value);
@@ -127,51 +173,44 @@ export default function FormApp() {
     // parsing dates: splice date string to get each part -> create Date object + compare start date with end date
   // method="POST"
   return (
-    <>
-    <main>
-        <form onSubmit={handleSubmit}>
-          <ul>
-            <li>
-              <label>
-                Event Name: <input type="text" name="eventName" value={eventName} onChange={handleNameChange} required/>
-              </label>
+    <div className="font-sans mx-auto my-10 w-4/5">
+      <main className="w-full my-0 mx-auto h-auto flex flex-row justify-evenly">
+        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-xl px-8 pt-6 pb-8 mx-0 w-1/4 border border-blue">
+          <ul className="p-0 mb-1em list-none">
+            <li className="mt-4">
+              <label htmlFor="eventName" className="block  text-m font-bold mb-1">Event Name:</label>
+              <input id="eventName" type="text" name="eventName" value={eventName} onChange={handleNameChange} required
+              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black"/>
             </li>
-            <li>
-              <label>
-                Event Date: <input type="date" name="eventDate" value={eventDate} onChange={handleDateChange} required/>
-              </label>
+            <li className="mt-4">
+              <label htmlFor="eventStart" className="block  text-m font-bold mb-1">Event Start Time:</label>
+              <input id="eventStart" type="datetime-local" name="eventStart" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventStart.toISOStringWithOffset().slice(0,16)} onChange={handleStartChange} required
+              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black"/>
             </li>
-            <li>
-              <label>
-                Event Start Time: <input type="time" name="eventStartTime" min="00:00" max="24:00" value={eventStartTime} onChange={handleStartTimeChange} required/>
-              </label>
+            <li className="mt-4">
+              <label htmlFor="eventEnd" className="block  text-m font-bold mb-1">Event End Time:</label>
+              <input id="eventEnd" type="datetime-local" name="eventEnd" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventEnd.toISOStringWithOffset().slice(0,16)} onChange={handleEndChange} required
+              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black"/>
             </li>
-            <li>
-              <label>
-                Event End Time: <input type="time" name="eventEndTime" value={eventEndTime} onChange={handleEndTimeChange} required/>
-              </label>
+            <li className="mt-4">
+              <label htmlFor="selectedEventType" className="block  text-m font-bold mb-1">Event Type:</label>
+              <select id="selectedEventType" name="selectedEventType" value={eventType} onChange={handleTypeChange} required
+              className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black">
+                <Options categories={possibleEventTypes}/>
+              </select>
             </li>
-            <li>
-              <label>
-                Event Type:
-                <select name="selectedEventType" value={eventType} onChange={handleTypeChange} required>
-                  <Options categories={possibleEventTypes}/>
-                </select>
-              </label>
+            <li className="mt-4">
+              <label htmlFor="eventDesc" className="block  text-m font-bold mb-1">Event Description: </label>
+              <textarea id="eventDesc" name="eventDesc" value={eventDesc} onChange={handleDescChange} required className="w-full h-full py-2 px-3 rounded border border-blue shadow align-top focus:border-black"/>
             </li>
-            <li>
-              <label>
-                Event Description: <textarea name="eventDesc" value={eventDesc} onChange={handleDescChange} required/>
-              </label>
-            </li>
+            <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded text-center">Submit form</button>
           </ul>
-          <button type="submit" className="bg-transparent hover:bg-blue text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue hover:border-transparent rounded">Submit form</button>
         </form>
         <NewCalendar events={sampleEvents}/>
       </main>
-      <hr className="my-5 text-blue"/>
+      <hr className="w-full h-1 mt-5 bg-blue border-0 rounded"/>
       <Events dataList={allEvents}/>
-    </>
+    </div>
   );
 }
 
@@ -187,12 +226,8 @@ function Options({categories}) {
   );
 }
 
-
-// new calendar component
-const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
 function NewCalendar({events}) {
-  const currentDate = new Date();
+  const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
 
@@ -222,11 +257,9 @@ function NewCalendar({events}) {
   }, [events]);
 
   return (
-    <div className="calendar-container container mx-auto p-4">
-      <div className="mb-4">
-        <h2 className="text-center">{format(currentDate, "MMMM yyyy")}</h2>
-      </div>
-      <div className="grid grid-cols-7 grid-rows-5 gap-2">
+    <div className="mx-0 w-auto h-auto border border-blue bg-white shadow-md rounded-xl p-5">
+        <h2 className="text-center mb-1 font-bold text-lg">{format(currentDate, "MMMM yyyy")}</h2>
+      <div className="grid grid-cols-7 gap-2">
         {
           WEEKDAYS.map((day) => {
             return (<div key={day} className="font-bold text-center">{day}</div>);
@@ -247,9 +280,9 @@ function NewCalendar({events}) {
             const todaysEvents = eventsByDate[dateKey] || [];
             return (
               <div key={index} className={clsx("border rounded-md p-2 text-center", {"bg-gray-200 text-gray-900" : isToday(day)})}>
-                {format(day, "d")}
+                <p className="mb-2">{format(day, "d")}</p>
                 {todaysEvents.map((event) => {
-                  return (<div key={event.title} className="bg-green-200 rounded-md text-gray-900">{event.title}</div>);
+                  return (<div key={event.title} className="bg-green-200 rounded-md text-gray-900 p-0.5">{event.title}</div>);
                 })}
               </div>
             );
@@ -267,6 +300,60 @@ function NewCalendar({events}) {
   );
 }
 
+function Events({dataList}) {
+  const list = Array.from(dataList);
+  return(
+    <>
+      <h3 className="font-bold w-auto text-lg mx-auto my-3 text-center ">Your Events</h3>
+      <div className="flex flex-row flex-wrap justify-evenly">
+        { 
+          list.length === 0 ? 
+            (<p>No events created</p>) :
+            (list.map(event => (
+              // need to destructure props by spreading the properties of each object as separate props 
+              <Event key={event.id} eventObject={event}/>
+              ))
+            )
+        }
+      </div>
+    </>
+  );
+  /*
+  if (isPosted === true) {
+    return (
+      <>
+        <h3>Your Events</h3>
+        <pre>{data}</pre>
+      </>
+    );
+  } */
+}
+
+function Event({eventObject}) {
+
+
+  return (
+    <div className="block border bg-gray-200 my-5 mx-5">
+       <ul key={eventObject.id} className="list-disc list-inside p-5">
+          <li>Name: {eventObject.name}</li>
+          {
+          (eventObject.startDate === eventObject.endDate) ?
+              (<li>Date: {eventObject.startDate}</li>) : (<li>Dates: {eventObject.startDate + " to " + eventObject.endDate}</li>) 
+          }
+
+          {
+          (eventObject.startTime === eventObject.endTime) ?
+              (<li>Time: {eventObject.startTime}</li>) : (<li>Times: {eventObject.startTime + " to " + eventObject.endTime}</li>) 
+          }
+          <li>Type: {eventObject.type}</li>
+          <li>Description: {eventObject.description}</li>
+        </ul>
+    </div>
+  );
+}
+
+// previous calendar, day components
+/*
 const listOfDays = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, null, null, null];
 // <Calendar list={allEvents}/>
 function Calendar({list}) {
@@ -279,7 +366,7 @@ function Calendar({list}) {
       console.log("nothing to add");
     }
   
-    /*
+    // bad version
     calendarDays.forEach(dayObject => {
       list.forEach(eventObject => {
         if (dayObject.day.localeCompare(eventObject.day) === 0) {
@@ -287,7 +374,8 @@ function Calendar({list}) {
           console.log(dayObject);
         }
       });
-    }); */
+    }); 
+
     calendarDays.forEach((dayObject) => {
       // loop through each event in allEvents
       for (let index = 0; index < list.length - 1; index++) {
@@ -381,58 +469,16 @@ function Calendar({list}) {
   );
 }
 
+
 function Day({numberOfDay}) {
   return (
     <td className="day">
       {numberOfDay} 
-      {/*
+      {
         (newDayObject.events.length === 0) ? 
           (<p>No events</p>) :
-          (<p>{newDayObject.events}</p>) */
+          (<p>{newDayObject.events}</p>)
       }
-      
     </td>
   );
-}
-
-function Events({dataList}) {
-  const list = Array.from(dataList);
-  return(
-    <div className="events-container">
-      <h3 className="font-bold">Your Events</h3>
-      { 
-        list.length === 0 ? 
-          (<p>No events created</p>) :
-          (list.map(event => (
-            // need to destructure props by spreading the properties of each object as separate props 
-            <Event key={event.id} id={event.id} name={event.name} date={event.date} startTime={event.startTime} endTime={event.endTime} type={event.type} description={event.description} {...event}/>
-            ))
-          )
-      }
-    </div>
-  );
-  /*
-  if (isPosted === true) {
-    return (
-      <>
-        <h3>Your Events</h3>
-        <pre>{data}</pre>
-      </>
-    );
-  } */
-}
-
-function Event({id, name, date, startTime, endTime, type, description}) {
-  return (
-    <div>
-       <ul key={id}>
-          <li>Name: {name}</li>
-          <li>Date: {date}</li>
-          <li>Start Time: {startTime}</li>
-          <li>End Time: {endTime}</li>
-          <li>Type: {type}</li>
-          <li>Description: {description}</li>
-        </ul>
-    </div>
-  );
-}
+} */

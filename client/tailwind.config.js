@@ -140,6 +140,7 @@ module.exports = {
       orange: colors.orange,
       gray: colors.gray,
       green: colors.green,
+      default: colors.black
     },
     columns: {
       auto: 'auto',
