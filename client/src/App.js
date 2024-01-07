@@ -1,6 +1,9 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useMemo} from 'react';
 import './App.css';
+import './assets/main.css';
 import { v4 as uuidv4 } from 'uuid';
+import {addDays, subDays, eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth} from 'date-fns';
+import clsx from 'clsx';
 
 const possibleEventTypes = ['None', 'Service', 'Appointment', 'Course', 'Workshop', 'Retreat', 'Program'];
 
@@ -161,11 +164,15 @@ export default function FormApp() {
               </label>
             </li>
           </ul>
-          <button type="submit">Submit form</button>
+          <button type="submit" className="bg-transparent hover:bg-blue text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue hover:border-transparent rounded">Submit form</button>
         </form>
-        <Calendar list={allEvents}/>
+        <NewCalendar events={[
+          {date: subDays(new Date(), 5), title: "make puski"},
+          {date: subDays(new Date(), 8), title: "watch TODO"},
+          {date: subDays(new Date(), 24), title: "read book"}
+        ]}/>
       </main>
-      <hr/>
+      <hr className="my-5 text-blue"/>
       <Events dataList={allEvents}/>
     </>
   );
@@ -183,27 +190,79 @@ function Options({categories}) {
   );
 }
 
-// making the calendar -> try a 1-month calendar, say January 2024 - starts jan 1 on monday, jan 31 on wednesday - need to fill in other days
-// split event's date into year, month, day -> if day and month match the calendar, put the event in that day
-// each day -> {year, month, day, events}
+
+// new calendar component
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+function NewCalendar({events}) {
+  const currentDate = new Date();
+  const firstDayOfMonth = startOfMonth(currentDate);
+  const lastDayOfMonth = endOfMonth(currentDate);
+
+  // makes an array of the dates in between the specified start and end dates
+  const daysInMonth = eachDayOfInterval({
+    start: firstDayOfMonth,
+    end: lastDayOfMonth,
+  });
+
+  // account for offset in dates (1st is a monday, not a sunday)
+  const startingDayIndex = getDay(firstDayOfMonth); // returns index of the given day within its WEEK (so this would be 2, out of 0-6)
+  const endingDayIndex = getDay(lastDayOfMonth);
+
+  return (
+    <div className="calendar-container container mx-auto p-4">
+      <div className="mb-4">
+        <h2 className="text-center">{format(currentDate, "MMMM yyyy")}</h2>
+      </div>
+      <div className="grid grid-cols-7 grid-rows-5 gap-2">
+        {
+          WEEKDAYS.map((day) => {
+            return <div key={day} className="font-bold text-center">{day}</div>
+          })
+        }
+
+        {
+          // render empty days to offset the dates
+          Array.from({length: startingDayIndex}).map((_, index) => {
+            return <div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>;
+          })
+        }
+
+        {
+        // array will not change across renders - so the key can be the index
+          daysInMonth.map((day, index) => {
+            return (
+              <div key={index} className={clsx("border rounded-md p-2 text-center", {"bg-blue text-white" : isToday(day)})}>
+                {format(day, "d")}
+              </div>
+            );
+          })
+        }
+
+        {
+          // render empty days to fill in the end of the calendar
+          Array.from({length: (6 - endingDayIndex)}).map((_, index) => {
+            return <div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>;
+          })
+        }
+      </div>
+    </div>
+  );
+}
 
 const listOfDays = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, null, null, null];
-
+// <Calendar list={allEvents}/>
 function Calendar({list}) {
   const [calendarDays, setCalendarDays] = useState([]);
 
   function addEventToDay() {
-    // if the same event already exists in the day, don't add it 
-    // once the correct day is found, add the event and stop
-    // ideally -> loop through all the days and all the events, 
-    // what's actually happening -> the correct day is being logged to the console 
-
+    // adds events to all the days (sorta like a refresh button)
     console.log("puskat");
-    console.log(calendarDays);
     if (list.length === 0) {
       console.log("nothing to add");
     }
   
+    /*
     calendarDays.forEach(dayObject => {
       list.forEach(eventObject => {
         if (dayObject.day.localeCompare(eventObject.day) === 0) {
@@ -211,7 +270,37 @@ function Calendar({list}) {
           console.log(dayObject);
         }
       });
+    }); */
+    calendarDays.forEach((dayObject) => {
+      // loop through each event in allEvents
+      for (let index = 0; index < list.length - 1; index++) {
+        if (dayObject.events.length === 0) {
+          dayObject.events.push(list[index]);
+          console.log("event added because day had no events")
+        } else {
+          // let nonMatchingEventCounter = 0;
+          let eventExists = false;
+          // check if the event is already in the day's events by comparing their IDs 
+          // need to loop through all events in dayObject
+          for (let i = 0; i < dayObject.events.length; i++) {
+            //  the event in allEvents      an event in dayObject
+            if (list[index].id === dayObject.events.id) {
+              // if the events match, that means the event already exists in the day -> so, list[index] should not be added to dayObject.events
+              console.log("nothing happened because event already exists in the day");
+              eventExists = true;
+              break; // nothing happens
+            }
+          }
+          // all events in the day do NOT match list[index]
+          if (!eventExists) {
+            dayObject.events.push(list[index]);
+            console.log("event added normally");
+          }
+        }
+      }
+      console.log("did the loop");
     });
+    console.log(calendarDays);
   }
 
   if (calendarDays.length === 0) {
@@ -293,7 +382,7 @@ function Events({dataList}) {
   const list = Array.from(dataList);
   return(
     <div className="events-container">
-      <h3>Your Events</h3>
+      <h3 className="font-bold">Your Events</h3>
       { 
         list.length === 0 ? 
           (<p>No events created</p>) :
