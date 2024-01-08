@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL ->  handle multi-day events
+// CURRENT GOAL ->  
 // UPCOMING GOALS -> sort events (date), filter events (event type)
 // LATER GOALS -> proper input validation, provide clarity about edit/save/submit form buttons (refactor code)
 
@@ -279,11 +279,20 @@ function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, se
     return (
       // returns an object where each key-value pair is a date and an array of events with the same date
       events.reduce((acc, event) => { // iterates over each event and accumulate them into an object of arrays
-        const dateKey = format(event.startDate, "yyyy-MM-dd"); // formatted date is used as the key for grouping events
-        if (!acc[dateKey]) { // the date key doesn't exist in the accumulator object
-          acc[dateKey] = []; // it creates an empty array for that date key
-        }
-        acc[dateKey].push(event); // pushes the current event into the array corresponding to its date key
+        let startDateObject = event.start;
+        let endDateObject = event.end;
+        const daysInterval = eachDayOfInterval({start: startDateObject, end: endDateObject}); // an array of Date objects in between start, end
+        let dateKeys = []; // array of dateKeys
+        daysInterval.forEach((day) => {
+          dateKeys.push(format(day.toLocaleDateString().split(',')[0], "yyyy-MM-dd")); // formatted date is used as the key for grouping events
+        })
+
+        dateKeys.forEach((dateKey) => {
+          if (!acc[dateKey]) { // the date key doesn't exist in the accumulator object
+            acc[dateKey] = []; // it creates an empty array for that date key
+          }
+          acc[dateKey].push(event); // pushes the current event into the array corresponding to its date key
+        });
         return acc;
       }, {})
     )
