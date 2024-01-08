@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
-import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } from 'date-fns';
+import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL ->  
-// UPCOMING GOALS -> sort events (date), filter events (event type)
+// CURRENT GOAL -> 
+// UPCOMING GOALS -> filter events (event type)
 // LATER GOALS -> proper input validation, provide clarity about edit/save/submit form buttons (refactor code)
 
 class CustomDate extends Date {
@@ -30,6 +30,16 @@ class CustomDate extends Date {
     const hours = addZero(date.getHours());
     const minutes = addZero(date.getMinutes());
     return hours + ":" + minutes;
+  }
+
+  compareDates(date2) {
+    if (isBefore(this, date2)) {
+      return -1;
+    } else if (isEqual(this, date2)) {
+      return 0;
+    } else if (isAfter(this, date2)) {
+      return 1;
+    }
   }
 }
 
@@ -114,9 +124,32 @@ export default function FormApp() {
     setAllEvents(allEvents.filter((event) => event.id !== eventObject.id));
   }
 
+  function arraysAreEqual(array1, array2) {
+    // checks length of arrays                if the same event is found in both arrays
+    return array1.length === array2.length &&  array1.every((event, index) => event.id === array2[index].id);
+  }
+
+  function compareEvents(event1, event2) {
+    if (isBefore(event1.start, event2.start)) {
+      return -1;
+    } else if (isEqual(event1.start, event2.start)) {
+      return 0;
+    } else if (isAfter(event1.start, event2.start)) {
+      return 1;
+    }
+  }
+
+
   // useEffects for handling POST and GET requests -> putting on hold to implement calendar
   useEffect(() => {
     // code that relies on the updated state
+    const sortedEvents = [...allEvents];
+    sortedEvents.sort((a, b) => compareEvents(a, b));
+    
+    if (!arraysAreEqual(sortedEvents, allEvents)) {
+      setAllEvents(sortedEvents); // only changes state if the array actually gets sorted -> prevents infinite rendering
+    }
+
     setEventsForSelectedDay(allEvents);
     setSelectedDay(null);
     /*
@@ -292,6 +325,7 @@ function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, se
             acc[dateKey] = []; // it creates an empty array for that date key
           }
           acc[dateKey].push(event); // pushes the current event into the array corresponding to its date key
+          acc[dateKey].sort((a, b) => a.start.compareDates(b.start));
         });
         return acc;
       }, {})
