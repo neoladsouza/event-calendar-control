@@ -140,7 +140,10 @@ module.exports = {
       orange: colors.orange,
       gray: colors.gray,
       green: colors.green,
-      default: colors.black
+      default: colors.black,
+      purple: colors.purple,
+      red: colors.red,
+      otherBlue: "#7a93ba",
     },
     columns: {
       auto: 'auto',

@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
-import {eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth} from 'date-fns';
+import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> reformat all events to use Date objects 
+// CURRENT GOAL -> when day is clicked, show that day's events in "Your Events"
 // LET EVENTS ONLY BE ONE DAY
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -13,14 +13,14 @@ class CustomDate extends Date {
     // Adjust the time by subtracting 5 hours
     const adjustedDate = new Date(this);
     adjustedDate.setHours(adjustedDate.getHours() - offset);
-    
+
     // Use the standard toISOString method on the adjusted date
     return adjustedDate.toISOString().slice(0, 16);
   }
 
   getTimeToString() {
     function addZero(i) {
-      if (i < 10) {i = "0" + i}
+      if (i < 10) { i = "0" + i }
       return i;
     }
 
@@ -37,19 +37,28 @@ const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 
 export default function FormApp() {
   const [eventName, setEventName] = useState('');
-  // const [eventDate, setEventDate] = useState(new Date()); 
   const [eventStart, setStart] = useState(new CustomDate());
   const [eventEnd, setEnd] = useState(new CustomDate());
   const [eventType, setEventType] = useState(possibleEventTypes[0]);
   const [eventDesc, setEventDesc] = useState('');
   const [allEvents, setAllEvents] = useState([]);
-  /* const [isPosted, setIsPosted] = useState(false);
-  const [data, setData] = useState(null); */
+
+  // const [eventListProp, setListProp] = useState(allEvents);
+  // const [isDayClicked, setDayClicked] = useState(false);
+  // const [isPosted, setIsPosted] = useState(false);
+
+  /* useEffect(() => {
+    if (isDayClicked === false) {
+      console.log("isDayClicked: false");
+    } else {
+      console.log("isDayClicked: true");
+    }
+  }, [isDayClicked]); */
 
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
 
-    const newEvent = { 
+    const newEvent = {
       name: eventName,
       start: eventStart, // CustomDate object
       end: eventEnd, // CustomDate object
@@ -125,7 +134,7 @@ export default function FormApp() {
     }
   }, [isPosted]);
   */
-  
+
   function handleNameChange(e) {
     setEventName(e.target.value);
   }
@@ -159,56 +168,50 @@ export default function FormApp() {
     setEventDesc(e.target.value);
   }
 
-  // 1. make Calendar
   // handle deleting events, accessing events to edit
   // handle proper input validation in handleSubmit() (call another function for it within handleSubmit)
   // parse date and time strings to have repeated events and/or visible durations (prime react library?)
-    // parsing dates: splice date string to get each part -> create Date object + compare start date with end date
   // method="POST"
   return (
     <div className="font-sans mx-auto my-10 w-4/5">
       <main className="w-full my-0 mx-auto h-auto flex flex-row justify-evenly">
-        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-xl px-8 pt-6 pb-8 mx-0 w-1/4 border border-blue">
-          <ul className="p-0 mb-1em list-none">
-            <li className="mt-4">
-              <label htmlFor="eventName" className="block  text-m font-bold mb-1">Event Name:</label>
+        <form onSubmit={handleSubmit} className= "text-center bg-white shadow-md rounded-xl px-8 pt-6 pb-8 mx-0 w-1/4 border border-blue">
+            <div className="mt-4">
+              <label htmlFor="eventName" className="block text-left text-m font-bold mb-1">Event Name:</label>
               <input id="eventName" type="text" name="eventName" value={eventName} onChange={handleNameChange} required
-              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black"/>
-            </li>
-            <li className="mt-4">
-              <label htmlFor="eventStart" className="block  text-m font-bold mb-1">Event Start Time:</label>
-              <input id="eventStart" type="datetime-local" name="eventStart" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventStart.toISOStringWithOffset().slice(0,16)} onChange={handleStartChange} required
-              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black"/>
-            </li>
-            <li className="mt-4">
-              <label htmlFor="eventEnd" className="block  text-m font-bold mb-1">Event End Time:</label>
-              <input id="eventEnd" type="datetime-local" name="eventEnd" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventEnd.toISOStringWithOffset().slice(0,16)} onChange={handleEndChange} required
-              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black"/>
-            </li>
-            <li className="mt-4">
-              <label htmlFor="selectedEventType" className="block  text-m font-bold mb-1">Event Type:</label>
+                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
+            </div>
+            <div className="mt-4">
+              <label htmlFor="eventStart" className="block text-left text-m font-bold mb-1">Event Start Time:</label>
+              <input id="eventStart" type="datetime-local" name="eventStart" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventStart.toISOStringWithOffset().slice(0, 16)} onChange={handleStartChange} required
+                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
+            </div>
+            <div className="mt-4">
+              <label htmlFor="eventEnd" className="block text-left text-m font-bold mb-1">Event End Time:</label>
+              <input id="eventEnd" type="datetime-local" name="eventEnd" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventEnd.toISOStringWithOffset().slice(0, 16)} onChange={handleEndChange} required
+                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
+            </div>
+            <div className="mt-4">
+              <label htmlFor="selectedEventType" className="block text-left text-m font-bold mb-1">Event Type:</label>
               <select id="selectedEventType" name="selectedEventType" value={eventType} onChange={handleTypeChange} required
-              className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black">
-                <Options categories={possibleEventTypes}/>
+                className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black">
+                <Options categories={possibleEventTypes} />
               </select>
-            </li>
-            <li className="mt-4">
-              <label htmlFor="eventDesc" className="block  text-m font-bold mb-1">Event Description: </label>
-              <textarea id="eventDesc" name="eventDesc" value={eventDesc} onChange={handleDescChange} required className="w-full h-full py-2 px-3 rounded border border-blue shadow align-top focus:border-black"/>
-            </li>
-            <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded text-center">Submit form</button>
-          </ul>
+            </div>
+            <div className="mt-4">
+              <label htmlFor="eventDesc" className="block text-left text-m font-bold mb-1">Event Description: </label>
+              <textarea id="eventDesc" name="eventDesc" value={eventDesc} onChange={handleDescChange} required className="w-full h-full py-2 px-3 rounded border border-blue shadow align-top focus:border-black" />
+            </div>
+            <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded text-center">Submit form</button>
         </form>
-        <NewCalendar events={allEvents}/>
+        <NewCalendar events={allEvents} />
       </main>
-      <hr className="w-full h-1 mt-5 bg-blue border-0 rounded"/>
-      <Events dataList={allEvents}/>
     </div>
   );
 }
 
-function Options({categories}) {
-  return(
+function Options({ categories }) {
+  return (
     <>
       {
         categories.map((value, index) => (
@@ -219,10 +222,12 @@ function Options({categories}) {
   );
 }
 
-function NewCalendar({events}) {
+function NewCalendar({ events }) {
   const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [eventsForSelectedDay, setEventsForSelectedDay] = useState([]);
 
   // makes an array of the dates in between the specified start and end dates
   const daysInMonth = eachDayOfInterval({
@@ -235,23 +240,34 @@ function NewCalendar({events}) {
   const endingDayIndex = getDay(lastDayOfMonth);
 
   // useMemo -> don't want to perform all this code unless absolutely necessary
-  // take all of the events and create an object where each event can be accessed by a key, which is their date
   const eventsByDate = useMemo(() => {
     return (
-      events.reduce((acc, event) => {
-        const dateKey = format(event.startDate, "yyyy-MM-dd");
-        if (!acc[dateKey]) {
-          acc[dateKey] = [];
+      // returns an object where each key-value pair is a date and an array of events with the same date
+      events.reduce((acc, event) => { // iterates over each event and accumulate them into an object of arrays
+        const dateKey = format(event.startDate, "yyyy-MM-dd"); // formatted date is used as the key for grouping events
+        if (!acc[dateKey]) { // the date key doesn't exist in the accumulator object
+          acc[dateKey] = []; // it creates an empty array for that date key
         }
-        acc[dateKey].push(event);
+        acc[dateKey].push(event); // pushes the current event into the array corresponding to its date key
         return acc;
       }, {})
     )
   }, [events]);
 
+  function handleDayClick(someDay) {
+    setSelectedDay(someDay.toLocaleDateString());
+    const someDateKey = format(someDay, "yyyy-MM-dd")
+    setEventsForSelectedDay(eventsByDate[someDateKey] || []);
+  }
+
+  function handleCloseClick() {
+    setSelectedDay(null);
+    setEventsForSelectedDay(events); // allEvents
+  }
+
   return (
     <div className="mx-0 w-auto h-auto border border-blue bg-white shadow-md rounded-xl p-5">
-        <h2 className="text-center mb-1 font-bold text-lg">{format(currentDate, "MMMM yyyy")}</h2>
+      <h2 className="text-center mb-1 font-bold text-lg">{format(currentDate, "MMMM yyyy")}</h2>
       <div className="grid grid-cols-7 gap-2">
         {
           WEEKDAYS.map((day) => {
@@ -261,7 +277,7 @@ function NewCalendar({events}) {
 
         {
           // render empty days to offset the dates
-          Array.from({length: startingDayIndex}).map((_, index) => {
+          Array.from({ length: startingDayIndex }).map((_, index) => {
             return (<div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>);
           })
         }
@@ -271,39 +287,72 @@ function NewCalendar({events}) {
             const dateKey = format(day, "yyyy-MM-dd"); // making a key to access the event(s) by
             const todaysEvents = eventsByDate[dateKey] || [];
             return (
-              <div key={index + day + dateKey} className={clsx("border rounded-md p-2 text-center", {"bg-gray-200 text-gray-900" : isToday(day)})}>
-                <p className="mb-2">{format(day, "d")}</p>
-                {todaysEvents.map((event) => {
-                  return (<div key={event.name + dateKey + uuidv4()} className="bg-green-200 rounded-md text-gray-900 p-0.5">{event.name}<br/>{event.type}</div>);
-                })}
-              </div>
+              <Day key={dateKey + uuidv4()} index={index} day={day} dateKey={dateKey} todaysEvents={todaysEvents} selectedDay={selectedDay} onDayClick={handleDayClick} />
             );
           })
         }
 
         {
           // render empty days to fill in the end of the calendar
-          Array.from({length: (6 - endingDayIndex)}).map((_, index) => {
+          Array.from({ length: (6 - endingDayIndex) }).map((_, index) => {
             return (<div key={`empty-${index}`} className="border rounded-md p-2 text-center"></div>);
           })
         }
       </div>
+      <hr className="w-full h-1 mt-5 bg-blue border-0 rounded" />
+      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} />
     </div>
   );
 }
 
-function Events({dataList}) {
-  const list = Array.from(dataList);
-  return(
+function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
+  function handleClick() {
+    onDayClick(day); // sets selectedDay to day (Date object)
+    console.log(day.toLocaleDateString() + " clicked");
+  }
+
+  return (
+    <div key={index + day + dateKey} onClick={handleClick} className={clsx("border rounded-md p-2 text-center", { "bg-gray-200 text-gray-900": isToday(day), "border-blue border-2": day.toLocaleDateString() === selectedDay })}>
+      <p className="mb-2">{format(day, "d")}</p>
+      {todaysEvents.map((event) => {
+        return (
+          <div key={event.name + dateKey + uuidv4()} className="bg-otherBlue rounded-md text-white px-1 mb-2">
+            <div className="font-semibold mb-1">
+              {event.name}
+            </div>
+            {event.type}
+          </div>);
+      })}
+    </div>
+  )
+}
+
+function EventShowcase({ selectedDay, listOfEvents, onClose, handleEventClick }) {
+  const list = Array.from(listOfEvents);
+
+  let buttonTitle;
+  if (selectedDay === null) {
+    buttonTitle = "Refresh";
+  } else {
+    buttonTitle = "Close";
+  }
+  return (
     <>
-      <h3 className="font-bold w-auto text-lg mx-auto my-3 text-center ">Your Events</h3>
+      <div className="w-full h-auto m-0 flex flex-row justify-between">
+        {
+          (selectedDay === null) ? (<h3 className="font-bold w-auto text-xl my-4 text-center">Your Events</h3>) : (<h3 className="font-bold w-auto text-xl my-4 text-center">Your Events for {selectedDay}</h3>)
+        }
+        <button onClick={onClose} className="my-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">
+          {buttonTitle}
+        </button>
+      </div>
       <div className="flex flex-row flex-wrap justify-evenly">
-        { 
-          list.length === 0 ? 
+        {
+          list.length === 0 ?
             (<p>No events created</p>) :
             (list.map(event => (
-              <Event key={event.id} eventObject={event}/>
-              ))
+              <Event key={event.id} eventObject={event} handleEventClick={handleEventClick}/>
+            ))
             )
         }
       </div>
@@ -320,25 +369,27 @@ function Events({dataList}) {
   } */
 }
 
-function Event({eventObject}) {
-
+function Event({ eventObject, handleEventClick }) {
+  function handleClick() {
+    handleEventClick();
+  }
 
   return (
-    <div className="block border bg-gray-200 my-5 mx-5">
-       <ul key={eventObject.id} className="list-disc list-inside p-5">
-          <li>Name: {eventObject.name}</li>
-          {
+    <div className="block border bg-gray-200 my-5 mx-5" onClick={handleClick}>
+      <ul key={eventObject.id} className="list-disc list-inside p-5">
+        <li>Name: {eventObject.name}</li>
+        {
           (eventObject.startDate === eventObject.endDate) ?
-              (<li>Date: {eventObject.startDate}</li>) : (<li>Dates: {eventObject.startDate + " to " + eventObject.endDate}</li>) 
-          }
+            (<li>Date: {eventObject.startDate}</li>) : (<li>Dates: {eventObject.startDate + " to " + eventObject.endDate}</li>)
+        }
 
-          {
+        {
           (eventObject.startTime === eventObject.endTime) ?
-              (<li>Time: {eventObject.startTime}</li>) : (<li>Times: {eventObject.startTime + " to " + eventObject.endTime}</li>) 
-          }
-          <li>Type: {eventObject.type}</li>
-          <li>Description: {eventObject.description}</li>
-        </ul>
+            (<li>Time: {eventObject.startTime}</li>) : (<li>Times: {eventObject.startTime + " to " + eventObject.endTime}</li>)
+        }
+        <li>Type: {eventObject.type}</li>
+        <li>Description: {eventObject.description}</li>
+      </ul>
     </div>
   );
 }
