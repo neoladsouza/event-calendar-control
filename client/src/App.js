@@ -4,9 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> provide clarity about edit/save/submit form buttons (visually with UI, textually - better function names, locations)
-// UPCOMING GOALS -> deleting events, handle multi-day events, sort events (date), filter events (event type)
-// LATER GOALS -> proper input validation
+// CURRENT GOAL ->  handle multi-day events
+// UPCOMING GOALS -> sort events (date), filter events (event type)
+// LATER GOALS -> proper input validation, provide clarity about edit/save/submit form buttons (refactor code)
 
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -107,6 +107,11 @@ export default function FormApp() {
   function handleSaveClick() {
     console.log("save");
     setCurrentEventID('');
+  }
+
+  function handleDeleteClick(eventObject) {
+    // safely "delete" event by setting the state to a new array where that event is filtered out
+    setAllEvents(allEvents.filter((event) => event.id !== eventObject.id));
   }
 
   // useEffects for handling POST and GET requests -> putting on hold to implement calendar
@@ -236,7 +241,7 @@ export default function FormApp() {
             </div>
             <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded text-center">Submit form</button>
         </form>
-        <NewCalendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay}/>
+        <NewCalendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick}/>
       </main>
     </div>
   );
@@ -254,7 +259,7 @@ function Options({ categories }) {
   );
 }
 
-function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay}) {
+function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick}) {
   const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
@@ -330,7 +335,7 @@ function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, se
         }
       </div>
       <hr className="w-full h-1 mt-5 bg-blue border-0 rounded" />
-      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} />
+      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
     </div>
   );
 }
@@ -357,7 +362,7 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   )
 }
 
-function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick }) {
+function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick }) {
   const list = Array.from(listOfEvents);
 
   return (
@@ -376,7 +381,7 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, ha
           list.length === 0 ?
             (<p>No events created</p>) :
             (list.map(event => (
-              <Event key={event.id} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick}/>
+              <Event key={event.id} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
             ))
             )
         }
@@ -385,19 +390,31 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, ha
   );
 }
 
-function Event({ eventObject, handleEditClick, handleSaveClick }) {
+function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClick }) {
+  const [isEditing, setIsEditing] = useState(false);
+
   function handleEdit() {
     handleEditClick(eventObject);
+    setIsEditing(true);
   }
 
   function handleSave() {
     handleSaveClick();
+    setIsEditing(false);
+  }
+
+  function handleDelete() {
+    handleDeleteClick(eventObject);
   }
 
   return (
     <div className="block border bg-gray-200 my-5 mx-5">
-      <div className="flex flex-row justify-between px-2">
-        <button onClick={handleEdit} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Edit</button>
+      <div className="flex flex-row justify-between px-2 h-auto">
+        <button onClick={handleEdit} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Edit</button>
+        {
+          (isEditing === true) ? (<div className="text-lg font-semibold mt-4">Editing...</div>) : (<div className="text-lg font-semibold mt-4">Saved!</div>)
+        }
+        <button onClick={handleDelete}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Delete</button>
         <button onClick={handleSave}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Save</button>
       </div>
       <ul key={eventObject.id} className="list-disc list-inside p-5">
