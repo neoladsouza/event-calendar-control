@@ -4,8 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> when an event is clicked from the showcase, populate form fields with event info -> allow user to edit and update event
-// LET EVENTS ONLY BE ONE DAY
+// CURRENT GOAL -> deleting events
+// UPCOMING GOALS -> provide clarity about edit/save/submit form buttons (visually, textually), handle multi-day events, sort events (date), filter events (event type)
+// LATER GOALS -> proper input validation
+
 class CustomDate extends Date {
   toISOStringWithOffset() {
     const offset = 5; // EST is 5 hours behind toISOString() 
@@ -44,13 +46,8 @@ export default function FormApp() {
   const [allEvents, setAllEvents] = useState([]);
   const [currentEventID, setCurrentEventID] = useState('');
   
-  
   const [selectedDay, setSelectedDay] = useState(null);
   const [eventsForSelectedDay, setEventsForSelectedDay] = useState([]);
-
-  // const [eventListProp, setListProp] = useState(allEvents);
-  // const [isDayClicked, setDayClicked] = useState(false);
-  // const [isPosted, setIsPosted] = useState(false);
 
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
@@ -146,6 +143,7 @@ export default function FormApp() {
 
   /*
   useEffect(() => {
+      // const [isPosted, setIsPosted] = useState(false);
     console.log("Is Posted? :", isPosted);
 
     async function fetchEventsJSON() {
@@ -206,10 +204,6 @@ export default function FormApp() {
     setEventDesc(e.target.value);
   }
 
-  // handle deleting events, accessing events to edit
-  // handle proper input validation in handleSubmit() (call another function for it within handleSubmit)
-  // parse date and time strings to have repeated events and/or visible durations (prime react library?)
-  // method="POST"
   return (
     <div className="font-sans mx-auto my-10 w-4/5">
       <main className="w-full my-0 mx-auto h-auto flex flex-row justify-evenly">
@@ -389,15 +383,6 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, ha
       </div>
     </>
   );
-  /*
-  if (isPosted === true) {
-    return (
-      <>
-        <h3>Your Events</h3>
-        <pre>{data}</pre>
-      </>
-    );
-  } */
 }
 
 function Event({ eventObject, handleEditClick, handleSaveClick }) {
@@ -432,134 +417,3 @@ function Event({ eventObject, handleEditClick, handleSaveClick }) {
     </div>
   );
 }
-
-// previous calendar, day components
-/*
-const listOfDays = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, null, null, null];
-// <Calendar list={allEvents}/>
-function Calendar({list}) {
-  const [calendarDays, setCalendarDays] = useState([]);
-
-  function addEventToDay() {
-    // adds events to all the days (sorta like a refresh button)
-    console.log("puskat");
-    if (list.length === 0) {
-      console.log("nothing to add");
-    }
-  
-    // bad version
-    calendarDays.forEach(dayObject => {
-      list.forEach(eventObject => {
-        if (dayObject.day.localeCompare(eventObject.day) === 0) {
-          dayObject.events.push(eventObject);
-          console.log(dayObject);
-        }
-      });
-    }); 
-
-    calendarDays.forEach((dayObject) => {
-      // loop through each event in allEvents
-      for (let index = 0; index < list.length - 1; index++) {
-        if (dayObject.events.length === 0) {
-          dayObject.events.push(list[index]);
-          console.log("event added because day had no events")
-        } else {
-          // let nonMatchingEventCounter = 0;
-          let eventExists = false;
-          // check if the event is already in the day's events by comparing their IDs 
-          // need to loop through all events in dayObject
-          for (let i = 0; i < dayObject.events.length; i++) {
-            //  the event in allEvents      an event in dayObject
-            if (list[index].id === dayObject.events.id) {
-              // if the events match, that means the event already exists in the day -> so, list[index] should not be added to dayObject.events
-              console.log("nothing happened because event already exists in the day");
-              eventExists = true;
-              break; // nothing happens
-            }
-          }
-          // all events in the day do NOT match list[index]
-          if (!eventExists) {
-            dayObject.events.push(list[index]);
-            console.log("event added normally");
-          }
-        }
-      }
-      console.log("did the loop");
-    });
-    console.log(calendarDays);
-  }
-
-  if (calendarDays.length === 0) {
-    for (let index = 0; index < listOfDays.length; index++) {
-      setCalendarDays(prevCalendarDays => [...prevCalendarDays, createDayObject(listOfDays[index])]);
-    }
-  }
-
-  const createDayObject = (number) => {
-    const year = "2024";
-    const month = "01";
-    const day = (number === null) ? ("00") : number.toString();
-
-    return {
-      id: uuidv4(),
-      year: year,
-      month: month,
-      day: day,
-      events: []
-    };
-  };
-
-  const weeks = Array.from({length: 5}, (_, index) => {
-    const startDay = index * 7;
-    return listOfDays.slice(startDay, startDay + 7);
-  });
-
-  return (
-    <div className="calendar-container">
-      <h3>Your Calendar</h3>
-      <button type="button" onClick={addEventToDay}>Add Event</button>
-      <table>
-        <caption><h4>January 2024</h4></caption>
-        <thead>
-          <tr>
-            <td>Sunday</td>
-            <td>Monday</td>
-            <td>Tuesday</td>
-            <td>Wednesday</td>
-            <td>Thursday</td>
-            <td>Friday</td>
-            <td>Saturday</td>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            // every 7 days, make a new row
-            weeks.map((week, weekIndex) => (
-              <tr key={weekIndex + uuidv4()}>
-                {
-                  week.map((dayNumber) => (
-                    <Day key={dayNumber + uuidv4()} numberOfDay={dayNumber}/>
-                  ))
-                }
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-
-function Day({numberOfDay}) {
-  return (
-    <td className="day">
-      {numberOfDay} 
-      {
-        (newDayObject.events.length === 0) ? 
-          (<p>No events</p>) :
-          (<p>{newDayObject.events}</p>)
-      }
-    </td>
-  );
-} */
