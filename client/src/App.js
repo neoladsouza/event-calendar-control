@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> when day is clicked, show that day's events in "Your Events"
+// CURRENT GOAL -> when an event is clicked from the showcase, populate form fields with event info -> allow user to edit and update event
 // LET EVENTS ONLY BE ONE DAY
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -42,43 +42,81 @@ export default function FormApp() {
   const [eventType, setEventType] = useState(possibleEventTypes[0]);
   const [eventDesc, setEventDesc] = useState('');
   const [allEvents, setAllEvents] = useState([]);
+  const [currentEventID, setCurrentEventID] = useState('');
+  
+  
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [eventsForSelectedDay, setEventsForSelectedDay] = useState([]);
 
   // const [eventListProp, setListProp] = useState(allEvents);
   // const [isDayClicked, setDayClicked] = useState(false);
   // const [isPosted, setIsPosted] = useState(false);
 
-  /* useEffect(() => {
-    if (isDayClicked === false) {
-      console.log("isDayClicked: false");
-    } else {
-      console.log("isDayClicked: true");
-    }
-  }, [isDayClicked]); */
-
   function handleSubmit(e) {
     e.preventDefault(); // prevent webpage reloading
+    let newEvent;
 
-    const newEvent = {
-      name: eventName,
-      start: eventStart, // CustomDate object
-      end: eventEnd, // CustomDate object
-      startDate: eventStart.toLocaleDateString().split(',')[0],
-      endDate: eventEnd.toLocaleDateString().split(',')[0],
-      startTime: eventStart.getTimeToString(),
-      endTime: eventEnd.getTimeToString(),
-      type: eventType,
-      description: eventDesc,
-      id: eventName + uuidv4() // generate unique id for each event
+    // checking if event exists in array
+    const noEventMatchesCurrentID = allEvents.every((event) => (event.id !== currentEventID))
+    if (noEventMatchesCurrentID) { // create a new event if no events in the array match the current ID
+      console.log("creating a new event...");
+      newEvent = {
+        name: eventName,
+        start: eventStart, // CustomDate object
+        end: eventEnd, // CustomDate object
+        startDate: eventStart.toLocaleDateString().split(',')[0],
+        endDate: eventEnd.toLocaleDateString().split(',')[0],
+        startTime: eventStart.getTimeToString(),
+        endTime: eventEnd.getTimeToString(),
+        type: eventType,
+        description: eventDesc,
+        id: eventName + uuidv4() // generate unique id for each event
+      }
+      setAllEvents([...allEvents, newEvent]); // state updates are Asynchronous - need to place reliant code in useEffect  
+    } else { // if event does exist, reassign values of that specific event object
+      console.log("reassigning an existing event...");
+      allEvents.some((event) => {
+        if (event.id === currentEventID) {
+          event.name = eventName;
+          event.start = eventStart;
+          event.end = eventEnd;
+          event.startDate = eventStart.toLocaleDateString().split(',')[0];
+          event.endDate = eventEnd.toLocaleDateString().split(',')[0];
+          event.startTime = eventStart.getTimeToString();
+          event.endTime = eventEnd.getTimeToString();
+          event.type = eventType;
+          event.description = eventDesc;
+          setAllEvents([...allEvents]);
+          return true;
+        } else {
+          return false;
+        }
+      });
     }
+  }
 
-    // state updates are Asynchronous - need to place reliant code in useEffect
-    setAllEvents([...allEvents, newEvent]);
+  function handleEditClick(eventObject) {
+    // populate form fields with event info
+    setEventName(eventObject.name);
+    setStart(eventObject.start);
+    setEnd(eventObject.end);
+    setEventType(eventObject.type);
+    setEventDesc(eventObject.description);
+    setCurrentEventID(eventObject.id);
+    console.log(eventObject.name + " is clicked");
+    // when user submits form -> that specific event should be changed (use ID)
+  }
+
+  function handleSaveClick() {
+    console.log("save");
+    setCurrentEventID('');
   }
 
   // useEffects for handling POST and GET requests -> putting on hold to implement calendar
   useEffect(() => {
     // code that relies on the updated state
-    console.log(allEvents);
+    setEventsForSelectedDay(allEvents);
+    setSelectedDay(null);
     /*
     // function definition
       try {
@@ -182,20 +220,20 @@ export default function FormApp() {
                 className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
             </div>
             <div className="mt-4">
-              <label htmlFor="eventStart" className="block text-left text-m font-bold mb-1">Event Start Time:</label>
+              <label htmlFor="eventStart" className="block text-left text-m font-bold mb-1">Event Start:</label>
               <input id="eventStart" type="datetime-local" name="eventStart" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventStart.toISOStringWithOffset().slice(0, 16)} onChange={handleStartChange} required
-                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
+                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
             </div>
             <div className="mt-4">
-              <label htmlFor="eventEnd" className="block text-left text-m font-bold mb-1">Event End Time:</label>
+              <label htmlFor="eventEnd" className="block text-left text-m font-bold mb-1">Event End:</label>
               <input id="eventEnd" type="datetime-local" name="eventEnd" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventEnd.toISOStringWithOffset().slice(0, 16)} onChange={handleEndChange} required
-                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
+                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
             </div>
             <div className="mt-4">
               <label htmlFor="selectedEventType" className="block text-left text-m font-bold mb-1">Event Type:</label>
               <select id="selectedEventType" name="selectedEventType" value={eventType} onChange={handleTypeChange} required
-                className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black">
-                <Options categories={possibleEventTypes} />
+                className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black hover:cursor-pointer">
+                <Options categories={possibleEventTypes}/>
               </select>
             </div>
             <div className="mt-4">
@@ -204,7 +242,7 @@ export default function FormApp() {
             </div>
             <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded text-center">Submit form</button>
         </form>
-        <NewCalendar events={allEvents} />
+        <NewCalendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay}/>
       </main>
     </div>
   );
@@ -222,12 +260,10 @@ function Options({ categories }) {
   );
 }
 
-function NewCalendar({ events }) {
+function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay}) {
   const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [eventsForSelectedDay, setEventsForSelectedDay] = useState([]);
 
   // makes an array of the dates in between the specified start and end dates
   const daysInMonth = eachDayOfInterval({
@@ -300,7 +336,7 @@ function NewCalendar({ events }) {
         }
       </div>
       <hr className="w-full h-1 mt-5 bg-blue border-0 rounded" />
-      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} />
+      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} />
     </div>
   );
 }
@@ -312,7 +348,7 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   }
 
   return (
-    <div key={index + day + dateKey} onClick={handleClick} className={clsx("border rounded-md p-2 text-center", { "bg-gray-200 text-gray-900": isToday(day), "border-blue border-2": day.toLocaleDateString() === selectedDay })}>
+    <div key={index + day + dateKey} onClick={handleClick} className={clsx("border rounded-md p-2 text-center hover:cursor-pointer", { "bg-gray-200 text-gray-900": isToday(day), "border-blue border-2": day.toLocaleDateString() === selectedDay })}>
       <p className="mb-2">{format(day, "d")}</p>
       {todaysEvents.map((event) => {
         return (
@@ -327,31 +363,26 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   )
 }
 
-function EventShowcase({ selectedDay, listOfEvents, onClose, handleEventClick }) {
+function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick }) {
   const list = Array.from(listOfEvents);
 
-  let buttonTitle;
-  if (selectedDay === null) {
-    buttonTitle = "Refresh";
-  } else {
-    buttonTitle = "Close";
-  }
   return (
     <>
       <div className="w-full h-auto m-0 flex flex-row justify-between">
         {
           (selectedDay === null) ? (<h3 className="font-bold w-auto text-xl my-4 text-center">Your Events</h3>) : (<h3 className="font-bold w-auto text-xl my-4 text-center">Your Events for {selectedDay}</h3>)
         }
-        <button onClick={onClose} className="my-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">
-          {buttonTitle}
-        </button>
+        {
+          (selectedDay === null) ? (<button onClick={onClose} className="cursor-not-allowed opacity-50 my-3 h-auto w-auto bg-transparent text-center font-semibold py-2 px-4 border border-blue rounded">Close</button>) 
+          : <button onClick={onClose} className="my-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Close</button>
+        }
       </div>
       <div className="flex flex-row flex-wrap justify-evenly">
         {
           list.length === 0 ?
             (<p>No events created</p>) :
             (list.map(event => (
-              <Event key={event.id} eventObject={event} handleEventClick={handleEventClick}/>
+              <Event key={event.id} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick}/>
             ))
             )
         }
@@ -369,13 +400,21 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEventClick })
   } */
 }
 
-function Event({ eventObject, handleEventClick }) {
-  function handleClick() {
-    handleEventClick();
+function Event({ eventObject, handleEditClick, handleSaveClick }) {
+  function handleEdit() {
+    handleEditClick(eventObject);
+  }
+
+  function handleSave() {
+    handleSaveClick();
   }
 
   return (
-    <div className="block border bg-gray-200 my-5 mx-5" onClick={handleClick}>
+    <div className="block border bg-gray-200 my-5 mx-5">
+      <div className="flex flex-row justify-between px-2">
+        <button onClick={handleEdit} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Edit</button>
+        <button onClick={handleSave}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Save</button>
+      </div>
       <ul key={eventObject.id} className="list-disc list-inside p-5">
         <li>Name: {eventObject.name}</li>
         {
