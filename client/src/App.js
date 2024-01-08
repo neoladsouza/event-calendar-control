@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> deleting events
-// UPCOMING GOALS -> provide clarity about edit/save/submit form buttons (visually, textually), handle multi-day events, sort events (date), filter events (event type)
+// CURRENT GOAL -> provide clarity about edit/save/submit form buttons (visually with UI, textually - better function names, locations)
+// UPCOMING GOALS -> deleting events, handle multi-day events, sort events (date), filter events (event type)
 // LATER GOALS -> proper input validation
 
 class CustomDate extends Date {
