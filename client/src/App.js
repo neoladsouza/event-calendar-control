@@ -54,7 +54,7 @@ export default function FormApp() {
   const [eventDesc, setEventDesc] = useState('');
   const [allEvents, setAllEvents] = useState([]);
   const [currentEventID, setCurrentEventID] = useState('');
-  
+
   const [selectedDay, setSelectedDay] = useState(null);
   const [eventsForSelectedDay, setEventsForSelectedDay] = useState([]);
 
@@ -125,7 +125,7 @@ export default function FormApp() {
 
   function arraysAreEqual(array1, array2) {
     // checks length of arrays                if the same event is found in both arrays
-    return array1.length === array2.length &&  array1.every((event, index) => event.id === array2[index].id);
+    return array1.length === array2.length && array1.every((event, index) => event.id === array2[index].id);
   }
 
   function compareEvents(event1, event2) {
@@ -143,7 +143,7 @@ export default function FormApp() {
     // code that relies on the updated state
     const sortedEvents = [...allEvents];
     sortedEvents.sort((a, b) => compareEvents(a, b));
-    
+
     if (!arraysAreEqual(sortedEvents, allEvents)) {
       setAllEvents(sortedEvents); // only changes state if the array actually gets sorted -> prevents infinite rendering
     }
@@ -241,38 +241,38 @@ export default function FormApp() {
   }
 
   return (
-    <div className="font-sans mx-auto my-10 w-4/5">
-      <main className="w-full my-0 mx-auto h-auto flex flex-row justify-evenly">
-        <form onSubmit={handleSubmit} className= "text-center bg-white shadow-md rounded-xl px-8 pt-6 pb-8 mx-0 w-1/4 border border-blue">
-            <div className="mt-4">
-              <label htmlFor="eventName" className="block text-left text-m font-bold mb-1">Event Name:</label>
-              <input id="eventName" type="text" name="eventName" value={eventName} onChange={handleNameChange} required
-                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
-            </div>
-            <div className="mt-4">
-              <label htmlFor="eventStart" className="block text-left text-m font-bold mb-1">Event Start:</label>
-              <input id="eventStart" type="datetime-local" name="eventStart" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventStart.toISOStringWithOffset().slice(0, 16)} onChange={handleStartChange} required
-                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
-            </div>
-            <div className="mt-4">
-              <label htmlFor="eventEnd" className="block text-left text-m font-bold mb-1">Event End:</label>
-              <input id="eventEnd" type="datetime-local" name="eventEnd" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventEnd.toISOStringWithOffset().slice(0, 16)} onChange={handleEndChange} required
-                className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
-            </div>
-            <div className="mt-4">
-              <label htmlFor="selectedEventType" className="block text-left text-m font-bold mb-1">Event Type:</label>
-              <select id="selectedEventType" name="selectedEventType" value={eventType} onChange={handleTypeChange} required
-                className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black hover:cursor-pointer">
-                <Options categories={allEventTypes}/>
-              </select>
-            </div>
-            <div className="mt-4">
-              <label htmlFor="eventDesc" className="block text-left text-m font-bold mb-1">Event Description: </label>
-              <textarea id="eventDesc" name="eventDesc" value={eventDesc} onChange={handleDescChange} required className="w-full h-full py-2 px-3 rounded border border-blue shadow align-top focus:border-black" />
-            </div>
-            <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded text-center">Submit form</button>
+    <div className="font-sans my-5 w-full">
+      <main className="w-full mx-auto h-auto flex flex-row">
+        <form onSubmit={handleSubmit} className="text-center bg-white shadow-md rounded-xl px-8 pt-6 pb-8 mx-5 w-min h-max border border-blue">
+          <div className="mt-4">
+            <label htmlFor="eventName" className="block text-left text-m font-bold mb-1">Event Name:</label>
+            <input id="eventName" type="text" name="eventName" value={eventName} onChange={handleNameChange} required
+              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black" />
+          </div>
+          <div className="mt-4">
+            <label htmlFor="eventStart" className="block text-left text-m font-bold mb-1">Event Start:</label>
+            <input id="eventStart" type="datetime-local" name="eventStart" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventStart.toISOStringWithOffset().slice(0, 16)} onChange={handleStartChange} required
+              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
+          </div>
+          <div className="mt-4">
+            <label htmlFor="eventEnd" className="block text-left text-m font-bold mb-1">Event End:</label>
+            <input id="eventEnd" type="datetime-local" name="eventEnd" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventEnd.toISOStringWithOffset().slice(0, 16)} onChange={handleEndChange} required
+              className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
+          </div>
+          <div className="mt-4">
+            <label htmlFor="selectedEventType" className="block text-left text-m font-bold mb-1">Event Type:</label>
+            <select id="selectedEventType" name="selectedEventType" value={eventType} onChange={handleTypeChange} required
+              className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black hover:cursor-pointer">
+              <Options categories={allEventTypes} />
+            </select>
+          </div>
+          <div className="mt-4">
+            <label htmlFor="eventDesc" className="block text-left text-m font-bold mb-1">Event Description: </label>
+            <textarea id="eventDesc" name="eventDesc" value={eventDesc} onChange={handleDescChange} required className="w-full h-full py-2 px-3 rounded border border-blue shadow align-top focus:border-black" />
+          </div>
+          <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded text-center">Submit form</button>
         </form>
-        <Calendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick}/>
+        <Calendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick} />
       </main>
     </div>
   );
@@ -290,14 +290,10 @@ function Options({ categories }) {
   );
 }
 
-function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick}) {
+function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick }) {
   const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
-
-  
-  // EventShowcase determines what is being filtered via button clicks -> communicate to Calendar -> setEventsForSelectedDay(`filteredEventsList`)
-
 
   // makes an array of the dates in between the specified start and end dates
   const daysInMonth = eachDayOfInterval({
@@ -316,7 +312,7 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
       events.reduce((acc, event) => { // iterates over each event and accumulate them into an object of arrays
         let startDateObject = event.start;
         let endDateObject = event.end;
-        const daysInterval = eachDayOfInterval({start: startDateObject, end: endDateObject}); // an array of Date objects in between start, end
+        const daysInterval = eachDayOfInterval({ start: startDateObject, end: endDateObject }); // an array of Date objects in between start, end
         let dateKeys = []; // array of dateKeys
         daysInterval.forEach((day) => {
           dateKeys.push(format(day.toLocaleDateString().split(',')[0], "yyyy-MM-dd")); // formatted date is used as the key for grouping events
@@ -346,7 +342,7 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
   }
 
   return (
-    <div className="mx-0 w-auto h-auto border border-blue bg-white shadow-md rounded-xl p-5">
+    <div className="mx-5 w-full h-min border border-blue bg-white shadow-md rounded-xl p-5">
       <h2 className="text-center mb-1 font-bold text-lg">{format(currentDate, "MMMM yyyy")}</h2>
       <div className="grid grid-cols-7 gap-2">
         {
@@ -380,7 +376,7 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
         }
       </div>
       <hr className="w-full h-1 mt-5 bg-blue border-0 rounded" />
-      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
+      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
     </div>
   );
 }
@@ -392,11 +388,11 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   }
 
   return (
-    <div key={index + day + dateKey} onClick={handleClick} className={clsx("border rounded-md p-2 text-center hover:cursor-pointer", { "bg-gray-200 text-gray-900": isToday(day), "border-blue border-2": day.toLocaleDateString() === selectedDay })}>
+    <div key={index + day + dateKey} onClick={handleClick} className={clsx("border rounded-md p-2 text-center hover:cursor-pointer hover:bg-actualBlue-200", { "bg-gray-200 text-gray-900": isToday(day), "border-blue border-2": day.toLocaleDateString() === selectedDay })}>
       <p className="mb-2">{format(day, "d")}</p>
       {todaysEvents.map((event) => {
         return (
-          <div key={event.name + dateKey + uuidv4()} className="bg-otherBlue rounded-md text-white px-1 mb-2">
+          <div key={event.name + dateKey + uuidv4()} className="bg-blue rounded-md text-white px-1 mb-2">
             <div className="font-semibold mb-1">
               {event.name}
             </div>
@@ -407,7 +403,7 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   )
 }
 
-function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick}) {
+function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick }) {
   const list = Array.from(listOfEvents);
 
   return (
@@ -417,28 +413,18 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, ha
           (selectedDay === null) ? (<h3 className="font-bold w-auto text-xl mt-4 text-center">Your Events</h3>) : (<h3 className="font-bold w-auto text-xl mt-4 text-center">Your Events for {selectedDay}</h3>)
         }
         {
-          (selectedDay === null) ? (<button onClick={onClose} className="cursor-not-allowed opacity-50 mt-3 h-auto w-auto bg-transparent text-center font-semibold py-2 px-4 border border-blue rounded">Close</button>) 
-          : <button onClick={onClose} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded">Close</button>
+          (selectedDay === null) ? (<button onClick={onClose} className="cursor-not-allowed opacity-50 mt-3 h-auto w-auto bg-transparent text-center font-semibold py-2 px-4 border border-blue rounded">Close</button>)
+            : <button onClick={onClose} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded">Close</button>
         }
       </div>
-        <EventFilter events={list}/>
-      <div className="flex flex-row flex-wrap justify-evenly">
-        {
-          list.length === 0 ?
-            (<p>No events created</p>) :
-            (list.map(event => (
-              <Event key={event.id} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
-            ))
-            )
-        }
-      </div>
+      <EventFilter events={list} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
     </>
   );
 }
 
-function EventFilter({events, handleEditClick, handleSaveClick, handleDeleteClick}) {
+function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteClick }) {
   // const allEventTypes[]
-  const [selectedTypes, setSelectedTypes] = useState([]); 
+  const [selectedTypes, setSelectedTypes] = useState([]);
 
   const toggleType = (type) => {
     setSelectedTypes((previousState) => {
@@ -453,32 +439,58 @@ function EventFilter({events, handleEditClick, handleSaveClick, handleDeleteClic
   const filteredEvents = events.filter((event) => selectedTypes.length === 0 || selectedTypes.includes(event.type));
 
   return (
-    <div className="w-full h-auto mt-0 bg-gray-200 border-blue">
-      <div className="text-center">
-        <h4 className="font-bold w-auto block text-lg mt-2 text-center">Filter Events</h4>
-      </div>
-      <div className="w-full h-auto bg-transparent flex flex-row justify-between p-1 mt-1 mb-1">
+    <div className="w-full h-auto mt-0">
+      <div className="flex items-center space-x-2 w-max p-1 px-2 border-blue border-2 rounded bg-gray-200">
+        <h4 className="font-bold w-auto inline-block text-lg text-center my-1">Filter Events</h4>
+        <div className="space-x-2 bg-transparent p-1 my-1">
         {
           allEventTypes.map((type) => {
             return (
-              <button key={type} 
-                      onClick={() => toggleType(type)} 
-                      className={clsx("cursor-pointer m-0 h-auto w-auto text-center text-sm hover:bg-green-300 font-semibold py-2 px-4 border border-blue rounded",
-                                  {"bg-otherBlue" : selectedTypes.includes(type) === true,
-                                  "bg-white" : selectedTypes.includes(type) === false})}>{type}</button>
+              <button key={type}
+                onClick={() => toggleType(type)}
+                className={clsx("cursor-pointer m-0 h-min w-min text-center text-sm hover:bg-actualBlue-200 font-semibold py-2 px-4 border border-blue rounded",
+                  {
+                    "bg-actualBlue-200 rounded-full hover:bg-white": selectedTypes.includes(type) === true,
+                    "bg-white": selectedTypes.includes(type) === false
+                  })}>{type}</button>
             );
           })
         }
       </div>
-      <div className="w-full inline-block text-center text-sm font-semibold">
-        <h4 className="font-bold w-auto block text-lg mt-2 text-center">Filtered Events</h4>
-          {
-            filteredEvents.map((event) => (
-                <Event key={event.id} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
-            ))
-          }
+      </div>
+
+      <div className="w-full inline-block text-center">
+        <EventTable events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
       </div>
     </div>
+  );
+}
+
+function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick }) {
+  return (
+    <table className="table-fixed w-full h-auto mx-auto mt-5 border">
+      <thead>
+        <tr className="text-left border bg-blue text-white">
+          <th className="border">Name</th>
+          <th className="border">Date</th>
+          <th className="border">Time</th>
+          <th className="border">Type</th>
+          <th className="border w-1/4">Description</th>
+          <th className="border">Status</th>
+          <th className="border">Edit</th>
+          <th className="border">Save</th>
+          <th className="border">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          (events.map(event => (
+            <Event key={event.id} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
+          ))
+          )
+        }
+      </tbody>
+    </table>
   );
 }
 
@@ -500,29 +512,30 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
   }
 
   return (
-    <div className="block border bg-gray-200 my-5 mx-5">
-      <div className="flex flex-row justify-between px-2 h-auto">
-        <button onClick={handleEdit} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white font-semibold py-2 px-4 border border-blue  rounded">Edit</button>
+    <tr className="text-left border hover:bg-actualBlue-200">
+      <td>{eventObject.name}</td>
+      {
+        (eventObject.startDate === eventObject.endDate) ?
+          (<td>{eventObject.startDate}</td>) : (<td>{eventObject.startDate + " to " + eventObject.endDate}</td>)
+      }
+      {
+        (eventObject.startTime === eventObject.endTime) ?
+          (<td>{eventObject.startTime}</td>) : (<td>{eventObject.startTime + " to " + eventObject.endTime}</td>)
+      }
+      <td>{eventObject.type}</td>
+      <td className="break-all">{eventObject.description}</td>
         {
-          (isEditing === true) ? (<div className="text-lg font-semibold mt-4">Editing...</div>) : (<div className="text-lg font-semibold mt-4">Saved!</div>)
+          (isEditing === true) ? (<td className="font-semibold border">Editing...</td>) : (<td className="font-semibold border">Saved!</td>)
         }
-        <button onClick={handleDelete}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Delete</button>
-        <button onClick={handleSave}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Save</button>
-      </div>
-      <ul key={eventObject.id} className="list-disc list-inside p-5">
-        <li>Name: {eventObject.name}</li>
-        {
-          (eventObject.startDate === eventObject.endDate) ?
-            (<li>Date: {eventObject.startDate}</li>) : (<li>Dates: {eventObject.startDate + " to " + eventObject.endDate}</li>)
-        }
-
-        {
-          (eventObject.startTime === eventObject.endTime) ?
-            (<li>Time: {eventObject.startTime}</li>) : (<li>Times: {eventObject.startTime + " to " + eventObject.endTime}</li>)
-        }
-        <li>Type: {eventObject.type}</li>
-        <li>Description: {eventObject.description}</li>
-      </ul>
-    </div>
+      <td>
+        <button onClick={handleEdit} className="h-auto w-auto bg-transparent text-center hover:bg-white font-semibold py-2 px-4 border border-blue  rounded">Edit</button>
+      </td>
+      <td>
+        <button onClick={handleSave}className="h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Save</button>
+      </td>
+      <td>
+        <button onClick={handleDelete}className="h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Delete</button>
+      </td>
+    </tr>
   );
 }

@@ -5,3 +5,11 @@
 * {
   box-sizing: border-box;
 }
+
+table, tr, td, th {
+  border: 1.5px solid #120930;
+}
+
+td, th {
+  padding: 3px;
+}
