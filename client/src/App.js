@@ -448,7 +448,7 @@ function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteCli
             return (
               <button key={type}
                 onClick={() => toggleType(type)}
-                className={clsx("cursor-pointer m-0 h-min w-min text-center text-sm hover:bg-actualBlue-200 font-semibold py-2 px-4 border border-blue rounded",
+                className={clsx("cursor-pointer m-0 h-min w-min text-center text-sm hover:bg-actualBlue-200 focus:border-2 font-semibold py-2 px-4 border border-blue rounded",
                   {
                     "bg-actualBlue-200 rounded-full hover:bg-white": selectedTypes.includes(type) === true,
                     "bg-white": selectedTypes.includes(type) === false
@@ -512,7 +512,7 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
   }
 
   return (
-    <tr className="text-left border hover:bg-actualBlue-200">
+    <tr className="text-left border">
       <td>{eventObject.name}</td>
       {
         (eventObject.startDate === eventObject.endDate) ?
@@ -525,16 +525,16 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
       <td>{eventObject.type}</td>
       <td className="break-all">{eventObject.description}</td>
         {
-          (isEditing === true) ? (<td className="font-semibold border">Editing...</td>) : (<td className="font-semibold border">Saved!</td>)
+          (isEditing === true) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>)
         }
-      <td>
-        <button onClick={handleEdit} className="h-auto w-auto bg-transparent text-center hover:bg-white font-semibold py-2 px-4 border border-blue  rounded">Edit</button>
+      <td className="p-0 m-0">
+        <button onClick={handleEdit} className="h-full w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Edit</button>
       </td>
-      <td>
-        <button onClick={handleSave}className="h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Save</button>
+      <td className="p-0 m-0">
+        <button onClick={handleSave}className="h-auto w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Save</button>
       </td>
-      <td>
-        <button onClick={handleDelete}className="h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Delete</button>
+      <td className="p-0 m-0">
+        <button onClick={handleDelete}className="h-auto w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Delete</button>
       </td>
     </tr>
   );
