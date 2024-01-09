@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
-import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter } from 'date-fns';
+import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter, sub, add } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> proper input validation
-// LATER GOALS -> handle multiple months and years
+// CURRENT GOAL -> fix table rendering, text overflows with no wrapping
+// LATER GOALS -> proper input validation 
 
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -251,12 +251,12 @@ export default function FormApp() {
           </div>
           <div className="mt-4">
             <label htmlFor="eventStart" className="block text-left text-m font-bold mb-1">Event Start:</label>
-            <input id="eventStart" type="datetime-local" name="eventStart" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventStart.toISOStringWithOffset().slice(0, 16)} onChange={handleStartChange} required
+            <input id="eventStart" type="datetime-local" name="eventStart" value={eventStart.toISOStringWithOffset().slice(0, 16)} onChange={handleStartChange} required
               className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
           </div>
           <div className="mt-4">
             <label htmlFor="eventEnd" className="block text-left text-m font-bold mb-1">Event End:</label>
-            <input id="eventEnd" type="datetime-local" name="eventEnd" min="2024-01-01T00:00" max="2024-01-31T23:59" value={eventEnd.toISOStringWithOffset().slice(0, 16)} onChange={handleEndChange} required
+            <input id="eventEnd" type="datetime-local" name="eventEnd" value={eventEnd.toISOStringWithOffset().slice(0, 16)} onChange={handleEndChange} required
               className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
           </div>
           <div className="mt-4">
@@ -291,7 +291,8 @@ function Options({ categories }) {
 }
 
 function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick }) {
-  const currentDate = new CustomDate();
+  const [currentDate, setCurrentDate] = useState(new CustomDate());
+  // const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
 
@@ -341,9 +342,22 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
     setEventsForSelectedDay(events); // allEvents
   }
 
+  const previousYear = () => setCurrentDate(sub(currentDate, {years: 1}));
+  const previousMonth = () => setCurrentDate(sub(currentDate, {months : 1}));
+  const nextMonth = () => setCurrentDate(add(currentDate, {months : 1}));
+  const nextYear = () => setCurrentDate(add(currentDate, {years: 1}));
+  const handleSetToday = () => setCurrentDate(new CustomDate());
+
   return (
     <div className="mx-5 w-full h-min border border-blue bg-white shadow-md rounded-xl p-5">
-      <h2 className="text-center mb-1 font-bold text-lg">{format(currentDate, "MMMM yyyy")}</h2>
+      <div className="grid grid-cols-8 justify-center items-center text-center font-bold text-lg">
+        <div onClick={previousYear}>{"<<"}</div>
+        <div onClick={previousMonth}>{"<"}</div>
+        <h2 className="text-center mb-1 col-span-3">{format(currentDate, "MMMM yyyy")}</h2>
+        <div onClick={handleSetToday}>Today</div>
+        <div onClick={nextMonth}>{">"}</div>
+        <div onClick={nextYear}>{">>"}</div>
+      </div>
       <div className="grid grid-cols-7 gap-2">
         {
           WEEKDAYS.map((day) => {
