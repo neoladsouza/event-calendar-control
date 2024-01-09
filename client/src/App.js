@@ -4,9 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> 
-// UPCOMING GOALS -> filter events (event type)
-// LATER GOALS -> proper input validation, provide clarity about edit/save/submit form buttons (refactor code)
+// CURRENT GOAL -> filter events by event type -> filter allEvents, eventsByDate based on which type is selected
+// LATER GOALS -> color coding events by type, proper input validation, provide clarity about edit/save/submit form buttons (refactor code)
 
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -64,7 +63,7 @@ export default function FormApp() {
     let newEvent;
 
     // checking if event exists in array
-    const noEventMatchesCurrentID = allEvents.every((event) => (event.id !== currentEventID))
+    const noEventMatchesCurrentID = allEvents.every((event) => (event.id !== currentEventID));
     if (noEventMatchesCurrentID) { // create a new event if no events in the array match the current ID
       console.log("creating a new event...");
       newEvent = {
@@ -272,9 +271,9 @@ export default function FormApp() {
               <label htmlFor="eventDesc" className="block text-left text-m font-bold mb-1">Event Description: </label>
               <textarea id="eventDesc" name="eventDesc" value={eventDesc} onChange={handleDescChange} required className="w-full h-full py-2 px-3 rounded border border-blue shadow align-top focus:border-black" />
             </div>
-            <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded text-center">Submit form</button>
+            <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded text-center">Submit form</button>
         </form>
-        <NewCalendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick}/>
+        <Calendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick}/>
       </main>
     </div>
   );
@@ -292,10 +291,17 @@ function Options({ categories }) {
   );
 }
 
-function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick}) {
+function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick}) {
   const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
+
+  const [filteredTypes, setFilteredTypes] = useState([]); 
+  // EventShowcase determines what is being filtered via button clicks -> communicate to Calendar -> setEventsForSelectedDay(`filteredEventsList`)
+  useEffect(() => {
+    console.log(filteredTypes);
+  }, [filteredTypes]);
+
 
   // makes an array of the dates in between the specified start and end dates
   const daysInMonth = eachDayOfInterval({
@@ -378,7 +384,7 @@ function NewCalendar({ events, handleEditClick, handleSaveClick, selectedDay, se
         }
       </div>
       <hr className="w-full h-1 mt-5 bg-blue border-0 rounded" />
-      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
+      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} filteredTypes={filteredTypes} setFilteredTypes={setFilteredTypes}/>
     </div>
   );
 }
@@ -405,19 +411,49 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   )
 }
 
-function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick }) {
+function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick, filteredTypes, setFilteredTypes }) {
   const list = Array.from(listOfEvents);
+
+  function handleClick(index) {
+    console.log(possibleEventTypes[index] + " is clicked");
+    if (filteredTypes.includes(possibleEventTypes[index])) {
+      setFilteredTypes(filteredTypes.filter((type) => type !== possibleEventTypes[index])); // safely removes
+    } else {
+      setFilteredTypes([...filteredTypes, possibleEventTypes[index]]);
+    }
+  }
 
   return (
     <>
       <div className="w-full h-auto m-0 flex flex-row justify-between">
         {
-          (selectedDay === null) ? (<h3 className="font-bold w-auto text-xl my-4 text-center">Your Events</h3>) : (<h3 className="font-bold w-auto text-xl my-4 text-center">Your Events for {selectedDay}</h3>)
+          (selectedDay === null) ? (<h3 className="font-bold w-auto text-xl mt-4 text-center">Your Events</h3>) : (<h3 className="font-bold w-auto text-xl mt-4 text-center">Your Events for {selectedDay}</h3>)
         }
         {
-          (selectedDay === null) ? (<button onClick={onClose} className="cursor-not-allowed opacity-50 my-3 h-auto w-auto bg-transparent text-center font-semibold py-2 px-4 border border-blue rounded">Close</button>) 
-          : <button onClick={onClose} className="my-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Close</button>
+          (selectedDay === null) ? (<button onClick={onClose} className="cursor-not-allowed opacity-50 mt-3 h-auto w-auto bg-transparent text-center font-semibold py-2 px-4 border border-blue rounded">Close</button>) 
+          : <button onClick={onClose} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded">Close</button>
         }
+      </div>
+      <div className="w-full h-auto mt-0 bg-gray-200 border-blue">
+        <div className="text-center">
+          <h4 className="font-bold w-auto block text-lg mt-2 text-center">Filter Events</h4>
+          <div className="w-auto inline-block text-center text-sm font-semibold">
+            {
+              filteredTypes.map((type, index) => (
+                  <p key={type + index} className="inline bg-white px-2 py-1 mx-1 border rounded-full border-blue">{type}</p>
+              ))
+            }
+          </div>
+        </div>
+        <div className="w-full h-auto bg-transparent flex flex-row justify-between p-1 mt-1 mb-1">
+          {
+            possibleEventTypes.map((type, index) => {
+              return (
+                <button key={type} onClick={() => handleClick(index)} className="m-0 h-auto w-auto bg-transparent text-center text-sm hover:bg-white font-semibold py-2 px-4 border border-blue rounded">{type}</button>
+              );
+            })
+          }
+        </div>
       </div>
       <div className="flex flex-row flex-wrap justify-evenly">
         {
@@ -453,12 +489,12 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
   return (
     <div className="block border bg-gray-200 my-5 mx-5">
       <div className="flex flex-row justify-between px-2 h-auto">
-        <button onClick={handleEdit} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Edit</button>
+        <button onClick={handleEdit} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white font-semibold py-2 px-4 border border-blue  rounded">Edit</button>
         {
           (isEditing === true) ? (<div className="text-lg font-semibold mt-4">Editing...</div>) : (<div className="text-lg font-semibold mt-4">Saved!</div>)
         }
-        <button onClick={handleDelete}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Delete</button>
-        <button onClick={handleSave}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue hover:border-transparent rounded">Save</button>
+        <button onClick={handleDelete}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Delete</button>
+        <button onClick={handleSave}className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-white -700 font-semibold py-2 px-4 border border-blue  rounded">Save</button>
       </div>
       <ul key={eventObject.id} className="list-disc list-inside p-5">
         <li>Name: {eventObject.name}</li>

@@ -144,6 +144,7 @@ module.exports = {
       purple: colors.purple,
       red: colors.red,
       otherBlue: "#7a93ba",
+      transparent: colors.transparent,
     },
     columns: {
       auto: 'auto',
