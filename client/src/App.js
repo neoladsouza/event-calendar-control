@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> filter events by event type -> filter allEvents, eventsByDate based on which type is selected
+// CURRENT GOAL -> make events into a table structure
 // LATER GOALS -> color coding events by type, proper input validation, provide clarity about edit/save/submit form buttons (refactor code)
 
 class CustomDate extends Date {
@@ -42,7 +42,7 @@ class CustomDate extends Date {
   }
 }
 
-const possibleEventTypes = ['None', 'Service', 'Appointment', 'Course', 'Workshop', 'Retreat', 'Program'];
+const allEventTypes = ['None', 'Service', 'Appointment', 'Course', 'Workshop', 'Retreat', 'Program'];
 // const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -50,7 +50,7 @@ export default function FormApp() {
   const [eventName, setEventName] = useState('');
   const [eventStart, setStart] = useState(new CustomDate());
   const [eventEnd, setEnd] = useState(new CustomDate());
-  const [eventType, setEventType] = useState(possibleEventTypes[0]);
+  const [eventType, setEventType] = useState(allEventTypes[0]);
   const [eventDesc, setEventDesc] = useState('');
   const [allEvents, setAllEvents] = useState([]);
   const [currentEventID, setCurrentEventID] = useState('');
@@ -137,7 +137,6 @@ export default function FormApp() {
       return 1;
     }
   }
-
 
   // useEffects for handling POST and GET requests -> putting on hold to implement calendar
   useEffect(() => {
@@ -264,7 +263,7 @@ export default function FormApp() {
               <label htmlFor="selectedEventType" className="block text-left text-m font-bold mb-1">Event Type:</label>
               <select id="selectedEventType" name="selectedEventType" value={eventType} onChange={handleTypeChange} required
                 className="mx-auto w-full bg-white border border-black px-3 py-2 rounded shadow leading-tight focus:border-black hover:cursor-pointer">
-                <Options categories={possibleEventTypes}/>
+                <Options categories={allEventTypes}/>
               </select>
             </div>
             <div className="mt-4">
@@ -296,11 +295,8 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
 
-  const [filteredTypes, setFilteredTypes] = useState([]); 
+  
   // EventShowcase determines what is being filtered via button clicks -> communicate to Calendar -> setEventsForSelectedDay(`filteredEventsList`)
-  useEffect(() => {
-    console.log(filteredTypes);
-  }, [filteredTypes]);
 
 
   // makes an array of the dates in between the specified start and end dates
@@ -384,7 +380,7 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
         }
       </div>
       <hr className="w-full h-1 mt-5 bg-blue border-0 rounded" />
-      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} filteredTypes={filteredTypes} setFilteredTypes={setFilteredTypes}/>
+      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
     </div>
   );
 }
@@ -411,17 +407,8 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   )
 }
 
-function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick, filteredTypes, setFilteredTypes }) {
+function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick}) {
   const list = Array.from(listOfEvents);
-
-  function handleClick(index) {
-    console.log(possibleEventTypes[index] + " is clicked");
-    if (filteredTypes.includes(possibleEventTypes[index])) {
-      setFilteredTypes(filteredTypes.filter((type) => type !== possibleEventTypes[index])); // safely removes
-    } else {
-      setFilteredTypes([...filteredTypes, possibleEventTypes[index]]);
-    }
-  }
 
   return (
     <>
@@ -434,27 +421,7 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, ha
           : <button onClick={onClose} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded">Close</button>
         }
       </div>
-      <div className="w-full h-auto mt-0 bg-gray-200 border-blue">
-        <div className="text-center">
-          <h4 className="font-bold w-auto block text-lg mt-2 text-center">Filter Events</h4>
-          <div className="w-auto inline-block text-center text-sm font-semibold">
-            {
-              filteredTypes.map((type, index) => (
-                  <p key={type + index} className="inline bg-white px-2 py-1 mx-1 border rounded-full border-blue">{type}</p>
-              ))
-            }
-          </div>
-        </div>
-        <div className="w-full h-auto bg-transparent flex flex-row justify-between p-1 mt-1 mb-1">
-          {
-            possibleEventTypes.map((type, index) => {
-              return (
-                <button key={type} onClick={() => handleClick(index)} className="m-0 h-auto w-auto bg-transparent text-center text-sm hover:bg-white font-semibold py-2 px-4 border border-blue rounded">{type}</button>
-              );
-            })
-          }
-        </div>
-      </div>
+        <EventFilter events={list}/>
       <div className="flex flex-row flex-wrap justify-evenly">
         {
           list.length === 0 ?
@@ -466,6 +433,52 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, ha
         }
       </div>
     </>
+  );
+}
+
+function EventFilter({events, handleEditClick, handleSaveClick, handleDeleteClick}) {
+  // const allEventTypes[]
+  const [selectedTypes, setSelectedTypes] = useState([]); 
+
+  const toggleType = (type) => {
+    setSelectedTypes((previousState) => {
+      if (previousState.includes(type)) {
+        return previousState.filter((selected) => selected !== type);
+      } else {
+        return [...previousState, type];
+      }
+    })
+  }
+
+  const filteredEvents = events.filter((event) => selectedTypes.length === 0 || selectedTypes.includes(event.type));
+
+  return (
+    <div className="w-full h-auto mt-0 bg-gray-200 border-blue">
+      <div className="text-center">
+        <h4 className="font-bold w-auto block text-lg mt-2 text-center">Filter Events</h4>
+      </div>
+      <div className="w-full h-auto bg-transparent flex flex-row justify-between p-1 mt-1 mb-1">
+        {
+          allEventTypes.map((type) => {
+            return (
+              <button key={type} 
+                      onClick={() => toggleType(type)} 
+                      className={clsx("cursor-pointer m-0 h-auto w-auto text-center text-sm hover:bg-green-300 font-semibold py-2 px-4 border border-blue rounded",
+                                  {"bg-otherBlue" : selectedTypes.includes(type) === true,
+                                  "bg-white" : selectedTypes.includes(type) === false})}>{type}</button>
+            );
+          })
+        }
+      </div>
+      <div className="w-full inline-block text-center text-sm font-semibold">
+        <h4 className="font-bold w-auto block text-lg mt-2 text-center">Filtered Events</h4>
+          {
+            filteredEvents.map((event) => (
+                <Event key={event.id} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick}/>
+            ))
+          }
+      </div>
+    </div>
   );
 }
 
