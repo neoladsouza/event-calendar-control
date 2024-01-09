@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> make events into a table structure
-// LATER GOALS -> color coding events by type, proper input validation, provide clarity about edit/save/submit form buttons (refactor code)
+// CURRENT GOAL -> 
+// LATER GOALS -> proper input validation, provide clarity about edit/save/submit form buttons (refactor code), BUG: can edit multiple events at once ?!?
 
 class CustomDate extends Date {
   toISOStringWithOffset() {
