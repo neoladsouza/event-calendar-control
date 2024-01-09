@@ -439,8 +439,8 @@ function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteCli
   const filteredEvents = events.filter((event) => selectedTypes.length === 0 || selectedTypes.includes(event.type));
 
   return (
-    <div className="w-full h-auto mt-0">
-      <div className="flex items-center space-x-2 w-max p-1 px-2 border-blue border-2 rounded bg-gray-200">
+    <div className="w-full h-max mt-1">
+      <div className="flex items-center space-x-2 w-max h-max p-1 px-2 border-blue border-2 rounded bg-gray-200">
         <h4 className="font-bold w-auto inline-block text-lg text-center my-1">Filter Events</h4>
         <div className="space-x-2 bg-transparent p-1 my-1">
         {
@@ -448,15 +448,15 @@ function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteCli
             return (
               <button key={type}
                 onClick={() => toggleType(type)}
-                className={clsx("cursor-pointer m-0 h-min w-min text-center text-sm hover:bg-actualBlue-200 focus:border-2 font-semibold py-2 px-4 border border-blue rounded",
+                className={clsx("cursor-pointer m-0 h-min w-min text-center text-sm hover:border-2 focus:border-2 font-semibold py-2 px-4 border border-blue rounded",
                   {
-                    "bg-actualBlue-200 rounded-full hover:bg-white": selectedTypes.includes(type) === true,
+                    "bg-actualBlue-200 rounded-full": selectedTypes.includes(type) === true,
                     "bg-white": selectedTypes.includes(type) === false
                   })}>{type}</button>
             );
           })
         }
-      </div>
+        </div>
       </div>
 
       <div className="w-full inline-block text-center">
