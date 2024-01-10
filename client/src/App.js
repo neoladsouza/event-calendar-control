@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter, sub, add } from 'date-fns';
 import clsx from 'clsx';
 
-// CURRENT GOAL -> fix table rendering, text overflows with no wrapping
-// LATER GOALS -> proper input validation 
+// CURRENT GOAL -> proper input validation, month buttons
+// LATER GOALS -> host data in the backend
 
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -350,10 +350,10 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
 
   return (
     <div className="mx-5 w-full h-min border border-blue bg-white shadow-md rounded-xl p-5">
-      <div className="grid grid-cols-8 justify-center items-center text-center font-bold text-lg">
+      <div className="grid grid-cols-7 justify-center items-center text-center font-bold text-lg">
         <div onClick={previousYear}>{"<<"}</div>
         <div onClick={previousMonth}>{"<"}</div>
-        <h2 className="text-center mb-1 col-span-3">{format(currentDate, "MMMM yyyy")}</h2>
+        <h2 className="text-center mb-1 col-span-2">{format(currentDate, "MMMM yyyy")}</h2>
         <div onClick={handleSetToday}>Today</div>
         <div onClick={nextMonth}>{">"}</div>
         <div onClick={nextYear}>{">>"}</div>
@@ -482,7 +482,7 @@ function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteCli
 
 function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick }) {
   return (
-    <table className="table-fixed w-full h-auto mx-auto mt-5 border">
+    <table className="min-w-full mx-auto mt-5 border">
       <thead>
         <tr className="text-left border bg-blue text-white">
           <th className="border">Name</th>
@@ -527,28 +527,28 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
 
   return (
     <tr className="text-left border">
-      <td>{eventObject.name}</td>
+      <td className="w-1/9">{eventObject.name}</td>
       {
         (eventObject.startDate === eventObject.endDate) ?
-          (<td>{eventObject.startDate}</td>) : (<td>{eventObject.startDate + " to " + eventObject.endDate}</td>)
+          (<td className="whitespace-nowrap">{eventObject.startDate}</td>) : (<td className="whitespace-nowrap">{eventObject.startDate + " to " + eventObject.endDate}</td>)
       }
       {
         (eventObject.startTime === eventObject.endTime) ?
-          (<td>{eventObject.startTime}</td>) : (<td>{eventObject.startTime + " to " + eventObject.endTime}</td>)
+          (<td className="whitespace-nowrap">{eventObject.startTime}</td>) : (<td className="whitespace-nowrap">{eventObject.startTime + " to " + eventObject.endTime}</td>)
       }
-      <td>{eventObject.type}</td>
-      <td className="break-all">{eventObject.description}</td>
+      <td className="w-1/9">{eventObject.type}</td>
+      <td className="w-32 max-h-16 overflow-auto">{eventObject.description}</td>
         {
           (isEditing === true) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>)
         }
-      <td className="p-0 m-0">
+      <td className="w-1/9">
         <button onClick={handleEdit} className="h-full w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Edit</button>
       </td>
-      <td className="p-0 m-0">
-        <button onClick={handleSave}className="h-auto w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Save</button>
+      <td className="w-1/9">
+        <button onClick={handleSave}className="h-full w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Save</button>
       </td>
-      <td className="p-0 m-0">
-        <button onClick={handleDelete}className="h-auto w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Delete</button>
+      <td className="w-1/9">
+        <button onClick={handleDelete}className="h-full w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Delete</button>
       </td>
     </tr>
   );
