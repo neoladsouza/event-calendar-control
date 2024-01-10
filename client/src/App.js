@@ -350,13 +350,13 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
 
   return (
     <div className="mx-5 w-full h-min border border-blue bg-white shadow-md rounded-xl p-5">
-      <div className="grid grid-cols-7 justify-center items-center text-center font-bold text-lg">
-        <div onClick={previousYear}>{"<<"}</div>
-        <div onClick={previousMonth}>{"<"}</div>
-        <h2 className="text-center mb-1 col-span-2">{format(currentDate, "MMMM yyyy")}</h2>
-        <div onClick={handleSetToday}>Today</div>
-        <div onClick={nextMonth}>{">"}</div>
-        <div onClick={nextYear}>{">>"}</div>
+      <div className="grid grid-cols-7 justify-center items-center text-center font-bold text-lg mb-1">
+        <button onClick={previousYear} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{"<<"}</button>
+        <button onClick={previousMonth} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{"<"}</button>
+        <h2 className="text-center col-span-2 text-2xl">{format(currentDate, "MMMM yyyy")}</h2>
+        <button onClick={handleSetToday} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">Today</button>
+        <button onClick={nextMonth} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{">"}</button>
+        <button onClick={nextYear} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{">>"}</button>
       </div>
       <div className="grid grid-cols-7 gap-2">
         {
@@ -462,7 +462,7 @@ function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteCli
             return (
               <button key={type}
                 onClick={() => toggleType(type)}
-                className={clsx("cursor-pointer m-0 h-min w-min text-center text-sm hover:border-2 focus:border-2 font-semibold py-2 px-4 border border-blue rounded",
+                className={clsx("m-0 h-min w-min text-center text-sm hover:border-2 focus:border-2 font-semibold py-2 px-4 border border-blue rounded",
                   {
                     "bg-actualBlue-200 rounded-full": selectedTypes.includes(type) === true,
                     "bg-white": selectedTypes.includes(type) === false
@@ -484,16 +484,16 @@ function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClic
   return (
     <table className="min-w-full mx-auto mt-5 border">
       <thead>
-        <tr className="text-left border bg-blue text-white">
-          <th className="border">Name</th>
-          <th className="border">Date</th>
-          <th className="border">Time</th>
-          <th className="border">Type</th>
-          <th className="border w-1/4">Description</th>
-          <th className="border">Status</th>
-          <th className="border">Edit</th>
-          <th className="border">Save</th>
-          <th className="border">Delete</th>
+        <tr className="text-left bg-blue text-white">
+          <th className="" scope="col">Name</th>
+          <th className="" scope="col">Date</th>
+          <th className="" scope="col">Time</th>
+          <th className="" scope="col">Type</th>
+          <th className="w-1/4" scope="col">Description</th>
+          <th className="" scope="col">Status</th>
+          <th className="" scope="col">Edit</th>
+          <th className="" scope="col">Save</th>
+          <th className="" scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -526,15 +526,15 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
   }
 
   return (
-    <tr className="text-left border">
-      <td className="w-1/9">{eventObject.name}</td>
+    <tr className="border border-actualBlue-200">
+      <td className="text-left w-1/9">{eventObject.name}</td>
       {
         (eventObject.startDate === eventObject.endDate) ?
-          (<td className="whitespace-nowrap">{eventObject.startDate}</td>) : (<td className="whitespace-nowrap">{eventObject.startDate + " to " + eventObject.endDate}</td>)
+          (<td className="text-right whitespace-nowrap">{eventObject.startDate}</td>) : (<td className="whitespace-nowrap">{eventObject.startDate + " to " + eventObject.endDate}</td>)
       }
       {
         (eventObject.startTime === eventObject.endTime) ?
-          (<td className="whitespace-nowrap">{eventObject.startTime}</td>) : (<td className="whitespace-nowrap">{eventObject.startTime + " to " + eventObject.endTime}</td>)
+          (<td className="text-right whitespace-nowrap">{eventObject.startTime}</td>) : (<td className="whitespace-nowrap">{eventObject.startTime + " to " + eventObject.endTime}</td>)
       }
       <td className="w-1/9">{eventObject.type}</td>
       <td className="w-32 max-h-16 overflow-auto">{eventObject.description}</td>

@@ -7,9 +7,13 @@
 }
 
 table, tr, td, th {
-  border: 1.5px solid #120930;
+  border: 1px solid rgb(191 219 254);
 }
 
 th, td {
   padding: 0.5rem 1rem;
+}
+
+button {
+  cursor: pointer;
 }
