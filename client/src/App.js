@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+/* import React, { useState, useMemo } from 'react';
 import Form from "./Form.js";
 import LabelInput from "./LabelInput.js";
 import LabelTextArea from "./LabelTextArea.js";
@@ -117,31 +117,6 @@ export default function FormApp() {
 
     setEventsForSelectedDay(allEvents);
     setSelectedDay(null);
-    /*
-    // function definition
-      try {
-        const response = await fetch("/events", {
-          method: "POST",
-          headers: {"Content-Type": "application/json",},
-          body: JSON.stringify(allEvents),
-        });
-  
-        if (response.ok) {
-          console.log("data sent successfully!");
-          const responseData = await response.json();
-          console.log('Server response:', responseData);
-          setIsPosted(true);
-        } else {
-          console.log("failed to send data :(");
-          setIsPosted(false);
-        }
-      } catch (error) {
-        console.log("error sending data: ", error);
-        setIsPosted(false);
-      }
-    }
-    
-    postEventsJSON(); */
   }, [allEvents]); //  this code will log allEvents to the console whenever any of these allEvents changes
 
   function handleNameChange(e) {
@@ -184,4 +159,26 @@ export default function FormApp() {
       </Calendar>
     </div>
   );
-}
+} */
+
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './HomePage.js';
+import AboutPage from './AboutPage.js';
+import EventsPage from './EventsPage.js';
+import Navigation from './Navigation.js';
+
+export default function App() {
+  return (
+    <Router>
+      <div>
+        <Navigation />
+        <Routes>
+          <Route path="/" exact element={<HomePage/>} />
+          <Route path="/about" element={<AboutPage/>} />
+          <Route path="/events" element={<EventsPage/>} />
+        </Routes>
+      </div>
+    </Router>
+  );
+};
