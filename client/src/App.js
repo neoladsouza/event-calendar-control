@@ -3,9 +3,11 @@ import './App.css';
 import { v4 as uuidv4 } from 'uuid';
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, isBefore, isEqual, isAfter, sub, add } from 'date-fns';
 import clsx from 'clsx';
+import { FaEdit, FaRegSave } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { IconContext } from "react-icons";
 
-// CURRENT GOAL -> proper input validation, month buttons
-// LATER GOALS -> host data in the backend
+// CURRENT GOAL -> handle excel upload
 
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -491,9 +493,9 @@ function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClic
           <th className="" scope="col">Type</th>
           <th className="w-1/4" scope="col">Description</th>
           <th className="" scope="col">Status</th>
-          <th className="" scope="col">Edit</th>
-          <th className="" scope="col">Save</th>
-          <th className="" scope="col">Delete</th>
+          <th className="" scope="col"> </th>
+          <th className="" scope="col"> </th>
+          <th className="" scope="col"> </th>
         </tr>
       </thead>
       <tbody>
@@ -537,18 +539,30 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
           (<td className="text-right whitespace-nowrap">{eventObject.startTime}</td>) : (<td className="whitespace-nowrap">{eventObject.startTime + " to " + eventObject.endTime}</td>)
       }
       <td className="w-1/9">{eventObject.type}</td>
-      <td className="w-32 max-h-16 overflow-auto">{eventObject.description}</td>
+      <td className="w-32 max-h-16 overflow-auto text-left">{eventObject.description}</td>
         {
           (isEditing === true) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>)
         }
-      <td className="w-1/9">
-        <button onClick={handleEdit} className="h-full w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Edit</button>
+      <td className="w-min">
+          <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons"}}>
+            <div onClick={handleEdit} className=" hover:bg-gray-200">
+              <FaEdit />
+            </div>
+          </IconContext.Provider>
       </td>
-      <td className="w-1/9">
-        <button onClick={handleSave}className="h-full w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Save</button>
+      <td className="w-min">
+          <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons"}}>
+            <div onClick={handleSave} className=" hover:bg-gray-200">
+              <FaRegSave />
+            </div>
+          </IconContext.Provider>
       </td>
-      <td className="w-1/9">
-        <button onClick={handleDelete}className="h-full w-full bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 focus:bg-gray-200">Delete</button>
+      <td className="w-min">
+          <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons"}}>
+            <div onClick={handleDelete} className=" hover:bg-gray-200">
+              <MdDelete />
+            </div>
+          </IconContext.Provider>
       </td>
     </tr>
   );
