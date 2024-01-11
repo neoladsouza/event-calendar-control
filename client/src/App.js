@@ -8,7 +8,7 @@ import { MdDelete } from "react-icons/md";
 import { IconContext } from "react-icons";
 import * as XLSX from "xlsx";
 
-// CURRENT GOAL -> host this app on AWS S3
+// CURRENT GOAL -> read and write to json file to handle state
 
 class CustomDate extends Date {
   toISOStringWithOffset() {
@@ -143,7 +143,7 @@ export default function FormApp() {
     }
   }
 
-  useEffect(() => {
+  useMemo(() => {
     // code that relies on the updated state
     const sortedEvents = [...allEvents];
     sortedEvents.sort((a, b) => compareEvents(a, b));
@@ -238,7 +238,7 @@ export default function FormApp() {
             <ExcelDisplay excelData={excelData} setExcelData={setExcelData} allEvents={allEvents} setAllEvents={setAllEvents}/>
           </div>
         </section>
-        <Calendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick} />
+        <Calendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
       </main>
     </div>
   );
@@ -328,7 +328,7 @@ function Options({ categories }) {
   );
 }
 
-function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick }) {
+function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSelectedDay, eventsForSelectedDay, setEventsForSelectedDay, handleDeleteClick, currentEventID }) {
   const [currentDate, setCurrentDate] = useState(new CustomDate());
   // const currentDate = new CustomDate();
   const firstDayOfMonth = startOfMonth(currentDate);
@@ -428,7 +428,7 @@ function Calendar({ events, handleEditClick, handleSaveClick, selectedDay, setSe
         }
       </div>
       <hr className="w-full h-1 mt-5 bg-blue border-0 rounded" />
-      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
+      <EventShowcase listOfEvents={eventsForSelectedDay} selectedDay={selectedDay} onClose={handleCloseClick} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID}/>
     </div>
   );
 }
@@ -455,7 +455,7 @@ function Day({ index, day, dateKey, todaysEvents, selectedDay, onDayClick }) {
   )
 }
 
-function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick }) {
+function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
   const list = Array.from(listOfEvents);
 
   return (
@@ -469,12 +469,12 @@ function EventShowcase({ selectedDay, listOfEvents, onClose, handleEditClick, ha
             : <button onClick={onClose} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded">Close</button>
         }
       </div>
-      <EventFilter events={list} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
+      <EventFilter events={list} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
     </>
   );
 }
 
-function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteClick }) {
+function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
   // const allEventTypes[]
   const [selectedTypes, setSelectedTypes] = useState([]);
 
@@ -512,13 +512,13 @@ function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteCli
       </div>
 
       <div className="w-full inline-block text-center">
-        <EventTable events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
+        <EventTable events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
       </div>
     </div>
   );
 }
 
-function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick }) {
+function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
   return (
     <table className="min-w-full mx-auto mt-5 border">
       <thead>
@@ -537,7 +537,7 @@ function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClic
       <tbody>
         {
           (events.map(event => (
-            <Event key={event.id + uuidv4()} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} />
+            <Event key={event.id + uuidv4()} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
           ))
           )
         }
@@ -546,17 +546,13 @@ function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClic
   );
 }
 
-function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClick }) {
-  const [isEditing, setIsEditing] = useState(false);
-
+function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
   function handleEdit() {
     handleEditClick(eventObject);
-    setIsEditing(true);
   }
 
   function handleSave() {
     handleSaveClick();
-    setIsEditing(false);
   }
 
   function handleDelete() {
@@ -577,26 +573,26 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
       <td className="w-1/9">{eventObject.type}</td>
       <td className="w-32 max-h-16 overflow-auto text-left">{eventObject.description}</td>
         {
-          (isEditing === true) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>)
+          (currentEventID === eventObject.id) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>)
         }
       <td className="w-min">
           <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons"}}>
-            <div onClick={handleEdit} className=" hover:bg-gray-200">
-              <FaEdit />
+            <div className=" hover:bg-gray-200">
+              <FaEdit onClick={handleEdit}/>
             </div>
           </IconContext.Provider>
       </td>
       <td className="w-min">
           <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons"}}>
-            <div onClick={handleSave} className=" hover:bg-gray-200">
-              <FaRegSave />
+            <div className=" hover:bg-gray-200">
+              <FaRegSave onClick={handleSave}/>
             </div>
           </IconContext.Provider>
       </td>
       <td className="w-min">
           <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons"}}>
-            <div onClick={handleDelete} className=" hover:bg-gray-200">
-              <MdDelete />
+            <div className=" hover:bg-gray-200">
+              <MdDelete onClick={handleDelete}/>
             </div>
           </IconContext.Provider>
       </td>
