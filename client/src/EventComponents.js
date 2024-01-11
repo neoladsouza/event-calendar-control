@@ -28,7 +28,7 @@ export function EventHeader({ children, selectedDay, allEvents, setSelectedDay, 
   );
 }
 
-export function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID, categories }) {
+export function EventFilter({ credentials, events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID, categories }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
 
   const toggleType = (type) => {
@@ -65,32 +65,43 @@ export function EventFilter({ events, handleEditClick, handleSaveClick, handleDe
       </div>
 
       <div className="w-full inline-block text-center">
-        <EventTable events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
+        <EventTable credentials={credentials} events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
       </div>
     </div>
   );
 }
 
-function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
+export function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID, credentials }) {
   return (
     <table className="min-w-full mx-auto mt-5 border">
       <thead>
-        <tr className="text-left bg-blue text-white">
-          <th className="" scope="col">Name</th>
-          <th className="" scope="col">Date</th>
-          <th className="" scope="col">Time</th>
-          <th className="" scope="col">Type</th>
-          <th className="w-1/4" scope="col">Description</th>
-          <th className="" scope="col">Status</th>
-          <th className="" scope="col"> </th>
-          <th className="" scope="col"> </th>
-          <th className="" scope="col"> </th>
-        </tr>
+        {
+          credentials === null ?
+            <tr className="text-left bg-blue text-white">
+              <th className="" scope="col">Name</th>
+              <th className="" scope="col">Date</th>
+              <th className="" scope="col">Time</th>
+              <th className="" scope="col">Type</th>
+              <th className="w-1/4" scope="col">Description</th>
+            </tr>
+            :
+            <tr className="text-left bg-blue text-white">
+              <th className="" scope="col">Name</th>
+              <th className="" scope="col">Date</th>
+              <th className="" scope="col">Time</th>
+              <th className="" scope="col">Type</th>
+              <th className="w-1/4" scope="col">Description</th>
+              <th className="" scope="col">Status</th>
+              <th className="" scope="col"> </th>
+              <th className="" scope="col"> </th>
+              <th className="" scope="col"> </th>
+            </tr>
+        }
       </thead>
       <tbody>
         {
           (events.map(event => (
-            <Event key={event.id + uuidv4()} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
+            <Event credentials={credentials} key={event.id + uuidv4()} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
           ))
           )
         }
@@ -99,7 +110,7 @@ function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClic
   );
 }
 
-function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
+function Event({ credentials, eventObject, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
   function handleEdit() {
     handleEditClick(eventObject);
   }
@@ -126,29 +137,38 @@ function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClic
       <td className="w-1/9">{eventObject.type}</td>
       <td className="w-32 max-h-16 overflow-auto text-left">{eventObject.description}</td>
       {
-        (currentEventID === eventObject.id) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>)
+        credentials && ((currentEventID === eventObject.id) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>))
       }
-      <td className="w-min">
-        <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
-          <div className=" hover:bg-gray-200">
-            <FaEdit onClick={handleEdit} />
-          </div>
-        </IconContext.Provider>
-      </td>
-      <td className="w-min">
-        <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
-          <div className=" hover:bg-gray-200">
-            <FaRegSave onClick={handleSave} />
-          </div>
-        </IconContext.Provider>
-      </td>
-      <td className="w-min">
-        <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
-          <div className=" hover:bg-gray-200">
-            <MdDelete onClick={handleDelete} />
-          </div>
-        </IconContext.Provider>
-      </td>
+      {
+        credentials &&
+        <td className="w-min">
+          <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
+            <div className=" hover:bg-gray-200">
+              <FaEdit onClick={handleEdit} />
+            </div>
+          </IconContext.Provider>
+        </td>
+      }
+      {
+        credentials &&
+        <td className="w-min">
+          <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
+            <div className=" hover:bg-gray-200">
+              <FaRegSave onClick={handleSave} />
+            </div>
+          </IconContext.Provider>
+        </td>
+      }
+      {
+        credentials &&
+        <td className="w-min">
+          <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
+            <div className=" hover:bg-gray-200">
+              <MdDelete onClick={handleDelete} />
+            </div>
+          </IconContext.Provider>
+        </td>
+      }
     </tr>
   );
 }
