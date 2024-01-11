@@ -161,7 +161,7 @@ export default function FormApp() {
   );
 } */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './HomePage.js';
 import AboutPage from './AboutPage.js';
@@ -169,6 +169,8 @@ import EventsPage from './EventsPage.js';
 import Navigation from './Navigation.js';
 
 export default function App() {
+  const [credentials, setCredentials] = useState(null);
+
   return (
     <Router>
       <div>
