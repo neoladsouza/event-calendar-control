@@ -143,7 +143,6 @@ export default function FormApp() {
     }
   }
 
-  // useEffects for handling POST and GET requests -> putting on hold to implement calendar
   useEffect(() => {
     // code that relies on the updated state
     const sortedEvents = [...allEvents];
@@ -155,7 +154,6 @@ export default function FormApp() {
 
     setEventsForSelectedDay(allEvents);
     setSelectedDay(null);
-    console.log(allEvents);
     /*
     // function definition
       try {
@@ -183,56 +181,13 @@ export default function FormApp() {
     postEventsJSON(); */
   }, [allEvents]); //  this code will log allEvents to the console whenever any of these allEvents changes
 
-  /*
-  useEffect(() => {
-      // const [isPosted, setIsPosted] = useState(false);
-    console.log("Is Posted? :", isPosted);
-
-    async function fetchEventsJSON() {
-      try {
-        const response = await fetch("/events");
-  
-        if (response.ok) {
-          console.log("data fetched successfully!");
-          const fetchedData = await response.json();
-          setData(fetchedData);
-          console.log('Server response:', fetchedData);
-        } else {
-          console.error("failed to fetch data :(");
-        }
-      } catch (error) {
-        console.error("error fetching data: ", error);
-      }
-    }
-
-    if (isPosted === true) {
-      fetchEventsJSON();
-    } else {
-      console.log("did not fetch because isPosted is false");
-    }
-  }, [isPosted]);
-  */
-
   function handleNameChange(e) {
     setEventName(e.target.value);
   }
   function handleStartChange(e) {
     let startString = e.target.value; // format is 2017-06-01T08:30
-    // let startDate = startString.split('T')[0]; // 2017-06-01 (ISO 8601 format)
-    // let startTime = startString.split('T')[1]; // 08:30
     let date = new CustomDate(startString.slice(0, 16));
     setStart(date);
-    /*
-    // regular expression - to check format of inputted date string
-    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/; 
-    if (regex.test(startString)) {
-      let date = new Date(startString);
-      setStart(date);
-      // console.log(date, date.toLocaleString());
-      // console.log(eventStart.toISOString()); // 5 hours ahead
-    } else {
-      console.log("invalid date entered");
-    }*/
   }
   function handleEndChange(e) {
     let endString = e.target.value;
@@ -279,12 +234,10 @@ export default function FormApp() {
             </div>
             <button type="submit" className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded text-center">Submit form</button>
           </form>
-
           <div className="text-center bg-white shadow-md rounded-xl px-8 pt-6 pb-8 my-5 w-full h-max border border-blue">
             <ExcelDisplay excelData={excelData} setExcelData={setExcelData} allEvents={allEvents} setAllEvents={setAllEvents}/>
           </div>
         </section>
-
         <Calendar events={allEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} selectedDay={selectedDay} setSelectedDay={setSelectedDay} eventsForSelectedDay={eventsForSelectedDay} setEventsForSelectedDay={setEventsForSelectedDay} handleDeleteClick={handleDeleteClick} />
       </main>
     </div>
@@ -308,7 +261,7 @@ function ExcelDisplay({ excelData, setExcelData, allEvents, setAllEvents }) {
   }
 
   function excelEvents() {
-    const updatedEvents = allEvents;
+    const updatedEvents = [...allEvents];
     excelData.forEach((row) => {
       let newEvent = {
         name: row["Name"],
@@ -326,12 +279,9 @@ function ExcelDisplay({ excelData, setExcelData, allEvents, setAllEvents }) {
       newEvent.start.setMinutes(Number(newEvent.startTime.slice(3, 5)));
       newEvent.end.setHours(Number(newEvent.endTime.slice(0, 2)));
       newEvent.end.setMinutes(Number(newEvent.endTime.slice(3, 5)));
-      console.log(row);
-      console.log(newEvent);
       updatedEvents.push(newEvent);
     });
-    console.log(updatedEvents);
-    setAllEvents([...allEvents, updatedEvents]);
+    setAllEvents(updatedEvents);
   }
 
   return (
