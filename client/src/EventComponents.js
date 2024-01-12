@@ -13,7 +13,7 @@ export function EventHeader({ children, selectedDay, allEvents, setSelectedDay, 
   }
 
   return (
-    <div>
+    <div className="min-w-full">
       <div className="w-full h-auto m-0 flex flex-row justify-between">
         {
           (selectedDay === null) ? (<h3 className="font-bold w-auto text-xl mt-4 text-center">Your Events</h3>) : (<h3 className="font-bold w-auto text-xl mt-4 text-center">Your Events for {selectedDay}</h3>)
@@ -23,7 +23,9 @@ export function EventHeader({ children, selectedDay, allEvents, setSelectedDay, 
             : <button onClick={handleCloseClick} className="mt-3 h-auto w-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded">Close</button>
         }
       </div>
-      {children}
+      <div className="min-w-full">
+        {children}
+      </div>
     </div>
   );
 }
@@ -42,18 +44,20 @@ export function EventFilter({ credentials, events, handleEditClick, handleSaveCl
   }
 
   const filteredEvents = events.filter((event) => (selectedTypes.length === 0 || selectedTypes.includes(event.type)));
-
+  // when screen size gets small enough - set categories div to w-full ig idk imo keep tailwind here but obvi make css classes next week
   return (
     <div className="w-full h-max mt-1">
-      <div className="flex items-center space-x-2 w-max h-max p-1 px-2 border-blue border-2 rounded bg-gray-200">
-        <h4 className="font-bold w-auto inline-block text-lg text-center my-1">Filter Events</h4>
-        <div className="space-x-2 bg-transparent p-1 my-1">
+      
+      <div className="w-max flex flex-row flex-wrap items-center space-x-2 py-1 border-blue border-2 rounded bg-gray-200">
+        <h4 className="font-bold w-auto inline-block text-md text-center">Filter Events</h4>
+        
+        <div className="w-auto">
           {
             categories.map((type) => {
               return (
                 <button key={type}
                   onClick={() => toggleType(type)}
-                  className={clsx("m-0 h-min w-min text-center text-sm hover:border-2 focus:border-2 font-semibold py-2 px-4 border border-blue rounded",
+                  className={clsx("mx-1 p-1 inline-block text-center text-sm hover:bg-actualBlue-200 focus:border-2 font-semibold border border-blue rounded",
                     {
                       "bg-actualBlue-200 rounded-full": selectedTypes.includes(type) === true,
                       "bg-white": selectedTypes.includes(type) === false
@@ -67,6 +71,7 @@ export function EventFilter({ credentials, events, handleEditClick, handleSaveCl
       <div className="w-full inline-block text-center">
         <EventTable credentials={credentials} events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
       </div>
+      
     </div>
   );
 }

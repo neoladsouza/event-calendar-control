@@ -9,7 +9,7 @@ export default function Calendar({ children, events, selectedDay, setSelectedDay
   const [currentDate, setCurrentDate] = useState(new CustomDate());
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
-  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   // makes an array of the dates in between the specified start and end dates
   const daysInMonth = eachDayOfInterval({
@@ -60,13 +60,13 @@ export default function Calendar({ children, events, selectedDay, setSelectedDay
 
   return (
     <div className="mx-5 w-full h-min border border-blue bg-white shadow-md rounded-xl p-5">
-      <div className="grid grid-cols-7 justify-center items-center text-center font-bold text-lg mb-1">
-        <button onClick={previousYear} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{"<<"}</button>
-        <button onClick={previousMonth} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{"<"}</button>
+      <div className="grid grid-cols-7 justify-center items-center text-center font-bold text-md mb-1">
+        <button onClick={previousYear} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold p-2 border border-blue rounded">{"<<"}</button>
+        <button onClick={previousMonth} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold p-2 border border-blue rounded">{"<"}</button>
         <h2 className="text-center col-span-2 text-2xl">{format(currentDate, "MMMM yyyy")}</h2>
-        <button onClick={handleSetToday} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">Today</button>
-        <button onClick={nextMonth} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{">"}</button>
-        <button onClick={nextYear} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold py-2 px-4 border border-blue rounded">{">>"}</button>
+        <button onClick={handleSetToday} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold p-2 border border-blue rounded">Today</button>
+        <button onClick={nextMonth} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold p-2 border border-blue rounded">{">"}</button>
+        <button onClick={nextYear} className="h-min w-min mx-auto bg-transparent text-center hover:bg-gray-200 font-semibold p-2 border border-blue rounded">{">>"}</button>
       </div>
       <div className="grid grid-cols-7 gap-2">
         {
