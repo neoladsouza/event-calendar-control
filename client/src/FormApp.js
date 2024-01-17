@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { isBefore, isEqual, isAfter } from 'date-fns';
 
 // make Button components
+// 1st - POST request
 // submit event -> POST request -> GET request
 // every time page is loaded, make a GET request
 
