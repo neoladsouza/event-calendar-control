@@ -7,43 +7,119 @@
   --secondary-color: #120930;
   --third-color: rgb(191 219 254);
 }
+
 * {
   box-sizing: border-box;
+  color: var(--secondary-color);
 }
 
 .title-container {
-  background: linear-gradient(180deg,  var(--third-color) 0%, var(--primary-color) 100%);
+  background-color: rgb(191 219 254);
+  padding: 50px;
+}
+
+.footer-wrapper {
+  background-color: var(--third-color);
+}
+
+.footer {
+  background: var(--third-color);
+  padding: 25px 0;
+  display: grid;
+  grid-template-columns: 600px 600px;
+  grid-auto-rows: max-content;
+  column-gap: 40px;
+  row-gap: 20px; 
+  margin: 0 auto;
+  width: max-content;
+}
+
+.contact-text p {
+  font-size: 16px;
 }
 
 .grid-container {
   height: max-content;
-  padding: 20px;
-  background-color: var(--primary-color);
+  padding: 50px 0;
 }
 
 /* on small screens, only have one column*/
 .grid-div {
   display: grid;
   grid-template-columns: 600px 600px;
-  grid-auto-rows: 250px;
+  grid-auto-rows: max-content;
   column-gap: 40px;
   row-gap: 20px; 
   margin: 20px auto;
   width: max-content;
 }
 
+.text-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.text-grid div {
+  margin-bottom: 20px;
+}
+
+.about-grid {
+  display: grid;
+  width: fit-content;
+  margin: 50px auto;
+  grid-template-columns: repeat(3, 400px);
+  column-gap: 25px;
+  row-gap: 20px;
+}
+
+.about-grid div img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+}
+
+.founder-grid {
+  background-color: var(--third-color);
+  display: grid;
+  margin: 50px auto;
+  width: 70%;
+  grid-template-columns: 1fr 2fr;
+  column-gap: 25px;
+}
+
+.headshot {
+  border: 2px solid black;
+}
+
+ul {
+  list-style: disc;
+}
+
+p {
+  font-size: 1.2rem;
+  text-wrap: balance;
+}
+
+.centered-text {
+  padding: 20px;
+}
+
 .event-div div {
   border: 1px var(--secondary-color) solid;
+  background-color: var(--third-color);
   border-radius: 10px;
 }
 
 .upcoming-container {
   height: max-content;
-  background-color: white;
-  padding: 20px;
+  background-color: #f7f7f7;
+  padding: 50px 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
 }
 
 table, tr, td, th {
@@ -54,8 +130,13 @@ th, td {
   padding: 0.25rem 1rem;
 }
 
+th {
+  color: white;
+}
+
 button {
   cursor: pointer;
+  width: max-content;
 }
 
 .react-icons {
