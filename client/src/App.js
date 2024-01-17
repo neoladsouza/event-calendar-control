@@ -7,7 +7,7 @@ import Navigation from './Navigation.js';
 
 export default function App() {
   // const [credentials, setCredentials] = useState(null);
-  const credentials = null;
+  const credentials = "stinky";
 
   return (
     <Router>

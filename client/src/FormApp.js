@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { isBefore, isEqual, isAfter } from 'date-fns';
 
 // make Button components
+// submit event -> POST request -> GET request
+// every time page is loaded, make a GET request
 
 export default function FormApp({ credentials }) {
     const [eventName, setEventName] = useState('');
@@ -67,6 +69,16 @@ export default function FormApp({ credentials }) {
                 }
             });
         }
+
+        const apiURL = "https://925ueirp9c.execute-api.us-east-1.amazonaws.com/Stage1";
+        fetch(apiURL).then(response => {
+            if (!response.ok) {
+                throw new Error("network response puski");
+            }
+            return response.json();
+        }).then(data => {
+            console.log(data);
+        })
     }
 
     function handleEditClick(eventObject) {
@@ -117,6 +129,7 @@ export default function FormApp({ credentials }) {
 
         setEventsForSelectedDay(allEvents);
         setSelectedDay(null);
+        console.log(allEvents);
     }, [allEvents]); //  this code will log allEvents to the console whenever any of these allEvents changes
 
     function handleNameChange(e) {

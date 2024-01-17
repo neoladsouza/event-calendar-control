@@ -20,7 +20,7 @@ export default function ExcelDisplay({ allEvents, setAllEvents }) {
     }
   }
 
-  function excelEvents() {
+  function loadExcelAsEvents() {
     const updatedEvents = [...allEvents];
     excelData.forEach((row) => {
       let newEvent = {
@@ -49,7 +49,7 @@ export default function ExcelDisplay({ allEvents, setAllEvents }) {
       <label htmlFor="eventFile" className="block text-left text-m font-bold mb-1">Event File:</label>
       <input id="eventFile" onChange={handleFileUpload} type="file" accept=".xlsx, .xls" name="eventStart" required
         className="mx-auto shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight border-blue focus:border-black hover:cursor-pointer" />
-      <button onClick={excelEvents} className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded text-center">Load Excel Events</button>
+      <button onClick={loadExcelAsEvents} className="mt-5 bg-transparent hover:bg-gray-200 font-semibold py-2 px-4 border border-blue  rounded text-center">Load Excel Events</button>
 
       {
         excelData.length > 0 &&

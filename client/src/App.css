@@ -10,7 +10,6 @@
 
 * {
   box-sizing: border-box;
-  color: var(--secondary-color);
 }
 
 .title-container {
@@ -132,6 +131,11 @@ th, td {
 
 th {
   color: white;
+  background-color: var(--secondary-color);
+}
+
+td {
+  color: var(--secondary-color);
 }
 
 button {
