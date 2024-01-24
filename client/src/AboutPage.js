@@ -36,7 +36,7 @@ export default function AboutPage() {
         <div className='headshot shadow-md'>Image</div>
         <div className="text-center">
           <div>Fr. Dr. Henry Praveen D'Souza OCD is the director of Emmaus Wellness Centre. <br /> He holds a PhD in Counseling Psychology from De La Salle University, Manila, Philippines. </div>
-          <div>Personal Phone: 8007593531 </div>
+          <div>Director Phone: 8007593531 </div>
         </div>
       </div>
       <Footer />

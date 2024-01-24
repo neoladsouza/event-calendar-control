@@ -14,7 +14,7 @@ export default function Footer() {
                 <div className='contact-text'>
                     <p>Contact: 9423951027</p>
                     <p>Inquiry: emmausmapusa@outlook.com</p>
-                    <p>Address: Emmaus Wellness Centre, Near The Court, Feira Alta, Mapusa, Goa 403507</p>
+                    <p>Address: Emmaus Wellness Centre, Carmelite Fathers, Near The Court, Feira Alta, Mapusa, Goa 403507</p>
                 </div>
             </footer>
         </div>
