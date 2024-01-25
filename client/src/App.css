@@ -102,10 +102,6 @@ p {
   text-wrap: balance;
 }
 
-.centered-text {
-  padding: 20px;
-}
-
 .event-div div {
   border: 1px var(--secondary-color) solid;
   background-color: var(--third-color);
@@ -138,6 +134,8 @@ td {
   color: var(--secondary-color);
 }
 
+/* for components - untailwinding */
+
 button {
   cursor: pointer;
   width: max-content;
@@ -148,4 +146,25 @@ button {
   cursor: pointer;
   margin: 0;
   padding: 0;
+}
+
+.shadow {
+  box-shadow: 0 4px 6px -1px rgb(148, 145, 145), 0 2px 4px -2px rgb(148, 145, 145);
+}
+
+.centered-text {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.title-banner {
+  width: 100%;
+  padding: 1.25rem;
+  margin: 0 auto;
+  background-color: white;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  text-align: center;
 }
