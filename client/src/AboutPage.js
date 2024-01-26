@@ -11,7 +11,7 @@ export default function AboutPage() {
     <div>
       <div className="title-container">
         <div className="title-banner">
-          <h4>About Us </h4>
+          <h1>About Us</h1>
         </div>
       </div>
 

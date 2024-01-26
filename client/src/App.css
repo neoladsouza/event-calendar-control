@@ -166,11 +166,11 @@ button {
 }
 
 h1 {
-  font-size: 1.9rem;
+  font-size: 1.8rem;
 }
 
 h2 {
-  font-size: 1.75rem;
+  font-size: 1.65rem;
 }
 
 h3 {
@@ -199,11 +199,41 @@ h3 {
   background-color: transparent;
 }
 
+header {
+  width: 100%;
+  height: auto;
+  border: 0;
+  background-color: var(--third-color);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  padding: 0.5rem 1rem;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.18rem;
+  font-weight: 400;
+}
+
 .linked-button {
   display: inline-block;
   background-color: var(--third-color);
   border-radius: 9999px;
   padding: 0.5rem 1rem;
+}
+
+.nav-button {
+  border-radius: 0;
 }
 
 .linked-button:hover {
