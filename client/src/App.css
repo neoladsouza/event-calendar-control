@@ -161,6 +161,10 @@ button {
   font-style: italic;
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .subtitle {
   font-weight: 400;
 }
@@ -213,7 +217,7 @@ header {
 .logo {
   font-weight: 700;
   font-size: 1.25rem;
-  padding: 0.5rem 1rem;
+  padding: 0;
 }
 
 nav {
@@ -223,6 +227,7 @@ nav {
   align-items: center;
   font-size: 1.18rem;
   font-weight: 400;
+  margin: 0 1rem;
 }
 
 .linked-button {

@@ -7,7 +7,7 @@ export default function Navigation() {
     <header>
       <div className="logo">Emmaus Wellness</div>
       <nav>
-        <Link to="/"><button className="linked-button">Home</button></Link>
+        <Link to="/"><button className="linked-button nav-button">Home</button></Link>
         <Link to="/about"><button className="linked-button nav-button">About</button></Link>
         <Link to="/events"><button className="linked-button nav-button">Events</button></Link>
       </nav>
