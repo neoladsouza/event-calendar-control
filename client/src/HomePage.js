@@ -11,7 +11,7 @@ export default function HomePage() {
       <div className="title-container">
         <div className="title-banner">
           <h1>Emmaus Wellness Centre is a place to come and meet the risen Jesus and cast away all fears and anxieties. </h1>
-          <h2>This is a unique and first of its kind centre in Goa.</h2>
+          <h2 className="italic subtitle">This is a unique and first of its kind centre in Goa.</h2>
         </div>
       </div>
 
@@ -33,12 +33,12 @@ export default function HomePage() {
             <img src={chapel} alt="" />
           </div>
           <div className='text-section'>
-            <div className='home-subheading'>What We Do</div>
+            <div className='home-subheading'><h3>What We Do</h3></div>
             <div>
               <p>Many programs, ranging from courses to retreats, are offered at Emmaus. We are open for week-long self-directed or guided retreats for religious as well as lay people throughout the year.
 We are also open for private workshops, seminars and meetings</p>
             </div>
-            <div className='w-auto mx-auto font-bold text-2xl text-center'>Our Programs</div>
+            <div className='home-subheading'><h3>Our Programs</h3></div>
             <div>
               <ul>
                 <li><p>Counseling Appointments</p></li>
@@ -54,14 +54,14 @@ We are also open for private workshops, seminars and meetings</p>
       </div>
 
       <div className="upcoming-container">
-        <div className='w-auto mx-auto font-bold text-2xl'>Upcoming Events</div>
+        <div className='home-subheading upcoming-heading'><h2>Upcoming Events</h2></div>
         <div className="event-div grid-div">
-          <div className='bg-white shadow-md'>Event 1</div>
-          <div className='bg-white shadow-md'>Event 2</div>
-          <div className='bg-white shadow-md'>Event 3</div>
-          <div className='bg-white shadow-md'>Event 4</div>
+          <div className=''>Event 1</div>
+          <div className=''>Event 2</div>
+          <div className=''>Event 3</div>
+          <div className=''>Event 4</div>
         </div>
-        <Link to="/events"><button className='w-auto mx-auto bg-blue text-white rounded-full py-2 px-4'>Our Calendar</button></Link>
+        <Link to="/events"><button className='linked-button'>Our Calendar</button></Link>
       </div>
 
       <Footer/>
