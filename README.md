@@ -8,5 +8,5 @@
  All text entered in columns need to be of tye Text, even for dates and times. 
 
  # Sample Excel Header and Rows
- <img width="518" alt="Sample Excel Header and Rows" src="https://github.com/neoladsouza/event-calendar/assets/64280173/3d059a53-4384-47be-adc3-db0e65ca323d">
+ See associated Excel sheet.
 
