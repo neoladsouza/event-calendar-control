@@ -30,7 +30,7 @@ export function EventHeader({ children, selectedDay, allEvents, setSelectedDay, 
   );
 }
 
-export function EventFilter({ credentials, events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID, categories }) {
+export function EventFilter({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID, categories }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
 
   const toggleType = (type) => {
@@ -48,7 +48,7 @@ export function EventFilter({ credentials, events, handleEditClick, handleSaveCl
   return (
     <div className="w-full h-max mt-1">
       
-      <div className="w-max flex flex-row flex-wrap items-center space-x-2 py-1 border-blue border-2 rounded bg-gray-200">
+      <div className="w-max flex flex-row flex-wrap items-center space-x-2 p-2 border-blue border-2 rounded bg-gray-200">
         <h4 className="font-bold w-auto inline-block text-md text-center">Filter Events</h4>
         
         <div className="w-auto">
@@ -69,27 +69,18 @@ export function EventFilter({ credentials, events, handleEditClick, handleSaveCl
       </div>
 
       <div className="w-full inline-block text-center">
-        <EventTable credentials={credentials} events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
+        <EventTable events={filteredEvents} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
       </div>
       
     </div>
   );
 }
 
-export function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID, credentials }) {
+export function EventTable({ events, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID,  }) {
   return (
     <table className="min-w-full mx-auto mt-5 border">
       <thead>
         {
-          credentials === null ?
-            <tr className="text-left bg-blue text-white">
-              <th className="" scope="col">Name</th>
-              <th className="" scope="col">Date</th>
-              <th className="" scope="col">Time</th>
-              <th className="" scope="col">Type</th>
-              <th className="w-1/4" scope="col">Description</th>
-            </tr>
-            :
             <tr className="text-left bg-blue text-white">
               <th className="" scope="col">Name</th>
               <th className="" scope="col">Date</th>
@@ -106,7 +97,7 @@ export function EventTable({ events, handleEditClick, handleSaveClick, handleDel
       <tbody>
         {
           (events.map(event => (
-            <Event credentials={credentials} key={event.id + uuidv4()} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
+            <Event key={event.id + uuidv4()} eventObject={event} handleEditClick={handleEditClick} handleSaveClick={handleSaveClick} handleDeleteClick={handleDeleteClick} currentEventID={currentEventID} />
           ))
           )
         }
@@ -115,7 +106,7 @@ export function EventTable({ events, handleEditClick, handleSaveClick, handleDel
   );
 }
 
-function Event({ credentials, eventObject, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
+function Event({ eventObject, handleEditClick, handleSaveClick, handleDeleteClick, currentEventID }) {
   function handleEdit() {
     handleEditClick(eventObject);
   }
@@ -142,10 +133,9 @@ function Event({ credentials, eventObject, handleEditClick, handleSaveClick, han
       <td className="w-1/9">{eventObject.type}</td>
       <td className="w-32 max-h-16 overflow-auto text-left">{eventObject.description}</td>
       {
-        credentials && ((currentEventID === eventObject.id) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>))
+        ((currentEventID === eventObject.id) ? (<td className="font-bold text-center bg-red-100">Editing...</td>) : (<td className="font-bold text-center bg-green-100">Saved</td>))
       }
       {
-        credentials &&
         <td className="w-min">
           <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
             <div className=" hover:bg-gray-200">
@@ -155,7 +145,6 @@ function Event({ credentials, eventObject, handleEditClick, handleSaveClick, han
         </td>
       }
       {
-        credentials &&
         <td className="w-min">
           <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
             <div className=" hover:bg-gray-200">
@@ -165,7 +154,6 @@ function Event({ credentials, eventObject, handleEditClick, handleSaveClick, han
         </td>
       }
       {
-        credentials &&
         <td className="w-min">
           <IconContext.Provider value={{ color: "#120930", size: "2rem", className: "react-icons" }}>
             <div className=" hover:bg-gray-200">
